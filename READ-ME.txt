@@ -1,0 +1,25 @@
+La herramienta se basa en la gestión de un data set mediante el lenguaje de programación 
+Python, cuya finalidad es implementar algun modelo como Red Neuronal Artificial, Árbol de Decisión, 
+algoritmo KNN, Regresión Lineal, etc. que permita generar predicciones en base
+al data set seleccionado.
+
+Para la primera versión de la herramienta, se consideraron las siguientes funcionalidades:
+Visualización de los datos
+    * Graficación de los datos (Implementando siete tipos de gráficas diferentes)
+    * Limpieza de los datos (Enfocadas en la gestión de resgistros o campos nulos)
+    * Creación de una Red Neuronal Artificial (Configurada para predicciones de campos binarios)
+
+Para ejecutar la aplicación, es necesario instalar las dependencias que se utilizaron en el 
+desarrollo del programa, estas se encuentran en el archivo 'requirements.txt'.
+
+Para instalar todas las dependencias mostradas en el archivo 'requirements.txt' se debe 
+ejecutar el siguiente comando por terminal:
+pip install -r requirements.txt
+
+Para la siguiente versión de la aplicación, se planea implementar:
+    * Normalización de los datos
+    * Creación de algoritmos de regresión
+    * Creación de árboles de decisión
+    * Creación del modelo KNN
+    * Gestor de configuración de los modelos
+    * Visualización del resumen de los modelos
