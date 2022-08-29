@@ -2,13 +2,13 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 import pandas as pd
 import funcionesDeTkinter as mn
-from keras.models import Sequential
 from idlelib.tooltip import Hovertip
-from keras.layers import Dense,Dropout
-from keras import callbacks
 import matplotlib.pyplot as plot
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from tkinter import messagebox as MessageBox
 
 def solicitarDatosPrueba():
@@ -129,52 +129,41 @@ def extraerDatos():
 ############################CODIGO DE REDES NEURONALES#################################################
 
 def CargarDatosPrediccion():
-    early_stopping = callbacks.EarlyStopping(
-    min_delta=0.001, # minimium amount of change to count as an improvement
-    patience=15, # how many epochs to wait before stopping
-    restore_best_weights=True)
+    x = mn.df.iloc[:, mn.campos]
+    y = mn.df.iloc[:, mn.objetivos]
 
-    # Initialising the NN
-    model = Sequential()
+    x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                    test_size = 0.10,
+                                                    shuffle = True,
+                                                    random_state = 1)
 
-    # layers
-    model.add(Dense(units = 16, kernel_initializer = 'uniform', activation = 'relu', input_dim = len(mn.campos)))
-    model.add(Dense(units = 8, kernel_initializer = 'uniform', activation = 'relu'))
-    model.add(Dropout(0.25))
-    model.add(Dense(units = 4, kernel_initializer = 'uniform', activation = 'relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
-    # Compiling the ANN
-    model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    # Arbol de decision
+    DTCclassifier = DecisionTreeClassifier(max_depth=3, min_samples_leaf=5, criterion='entropy', min_samples_split=5,
+                                       splitter='random', random_state=1)
+    DTCclassifier.fit(x_train, y_train)
+    y_pred_DTC = DTCclassifier.predict(x_test)
 
-    # Train the ANN
-    datosEntrada = mn.df.iloc[:, mn.campos]
-    datosObjetivo = mn.df.iloc[:, mn.objetivos]
-    global historial
-    historial = model.fit(datosEntrada, datosObjetivo, batch_size = 32, epochs = 500,callbacks=[early_stopping], validation_split=0.2)
+    DTCAcc = accuracy_score(y_pred_DTC, y_test)
+    porcentajePrecision["text"] = str(f'.:. Decision Tree Accuracy: {(DTCAcc*100):.2f}% .:.')
 
-    y_pred = model.predict(df2)
+    y_pred = DTCclassifier.predict(df2)
     print(y_pred)
-    y_pred = (y_pred > 0.4).astype('int32')
 
     global listaResultado
-    listaResultado = []
-    for res in y_pred:
-        for r in res:
-            listaResultado.append(r)
+    listaResultado = list(y_pred)
 
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
-    mostrarPrecision()
     MessageBox.showinfo("Success!", "The task has been performed correctly.")
+    # mostrarPrecision()
 
-def mostrarPrecision():
-    fig, ax = plot.subplots()
-    fig.suptitle("Model Accuracy Result")
-    plot.xlabel("Epoch number")
-    plot.ylabel("Precision")
-    ax.plot(historial.history["accuracy"])
-    porcentajePrecision["text"] = str(f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
-    plot.show()
+# def mostrarPrecision():
+#     fig, ax = plot.subplots()
+#     fig.suptitle("Model Accuracy Result")
+#     plot.xlabel("Epoch number")
+#     plot.ylabel("Precision")
+#     ax.plot(historial.history["accuracy"])
+#     porcentajePrecision["text"] = str(f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
+#     plot.show()
