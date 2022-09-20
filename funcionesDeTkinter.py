@@ -6,6 +6,8 @@ import pandas as pd
 import graficos as gf
 import redNeuronal as pr
 import arbolDeDecision as ar
+import kVecinos as knn
+import regresionLogistica as rl
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
@@ -260,7 +262,7 @@ def abrirMenuPrincipal():
     p3.img3_2 = ImageTk.PhotoImage(img3_2, master=p3)
     button3_2 = tk.Button(p3, text="Linear Regression", image=p3.img3_2,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=abrirModelos)
+                          border=0, command=abrirModelosRL)
     button3_2.grid(padx=10, pady=5, row=1, column=1)
     Hovertip(button3_2, hover_delay=500,
              text="Model: Linear Regression")
@@ -280,7 +282,7 @@ def abrirMenuPrincipal():
     p3.img3_4 = ImageTk.PhotoImage(img3_4, master=p3)
     button3_4 = tk.Button(p3, text="KNN", image=p3.img3_4,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=abrirModelos)
+                          border=0, command=abrirModelosKNN)
     button3_4.grid(padx=10, pady=5, row=1, column=3)
     Hovertip(button3_4, hover_delay=500,
              text="Model: KNN")
@@ -759,6 +761,134 @@ def abrirModelosArbol():
     btn1 = tk.Button(app, text='Select all', command=select_all)
     btn2 = tk.Button(app, text='Select all', command=select_all2)
     btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), ar.solicitarDatosPrueba(), app.destroy()])
+
+    # SCROLLBAR
+    listbox.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=listbox.yview)
+    listbox2.config(yscrollcommand=scrollbar2.set)
+    scrollbar2.config(command=listbox2.yview)
+    
+    # Placing the button and listbox
+    listbox.pack(side=LEFT, fill=tk.BOTH, expand=True, pady=(5, 70))
+    listbox2.pack(side=RIGHT, fill=tk.BOTH, expand=True, pady=(5, 70))
+    btn1.place(x=100, y=310)
+    btn2.place(x=440, y=310)
+    btn3.pack(side="bottom", pady=5)
+
+def abrirModelosRL():
+    app = ThemedTk(theme="adapta")
+    app.geometry('600x370')
+    app.resizable(False, False)
+
+    label = tk.Label(app, text="Select INPUTS and TARGET", font=('Helvetica', 12, 'bold'))
+    label.pack(side=tk.TOP)
+ 
+    # Create a listbox
+    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
+    listbox2 = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
+
+    #Creation SCROLLBARS
+    scrollbar = tk.Scrollbar(app)
+    scrollbar.pack(side=LEFT, fill=tk.Y, pady=(5, 70))
+    scrollbar2 = tk.Scrollbar(app)
+    scrollbar2.pack(side=RIGHT, fill=tk.Y, pady=(5, 70))
+ 
+    # Extraemos los datos
+    listaCampos = df.columns.tolist()
+
+    for i in range (len(listaCampos)):
+        listbox.insert(i, listaCampos[i])
+        listbox2.insert(i, listaCampos[i])
+
+    def selected_item():
+        global campos
+        campos = []
+        selected_campos = listbox.curselection()
+        campos = list(selected_campos)
+        print("\nCAMPOS: ", campos)
+
+
+    def selected_item2():
+        global objetivos
+        objetivos = []
+        selected_objetivos = listbox2.curselection()
+        objetivos = list(selected_objetivos)
+        print("\OBJETIVOS: ", objetivos)
+    
+    def select_all():
+        listbox.select_set(0, tk.END)
+    
+    def select_all2():
+        listbox2.select_set(0, tk.END)
+    
+    # Boton para enviar datos
+    btn1 = tk.Button(app, text='Select all', command=select_all)
+    btn2 = tk.Button(app, text='Select all', command=select_all2)
+    btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), rl.solicitarDatosPrueba(), app.destroy()])
+
+    # SCROLLBAR
+    listbox.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=listbox.yview)
+    listbox2.config(yscrollcommand=scrollbar2.set)
+    scrollbar2.config(command=listbox2.yview)
+    
+    # Placing the button and listbox
+    listbox.pack(side=LEFT, fill=tk.BOTH, expand=True, pady=(5, 70))
+    listbox2.pack(side=RIGHT, fill=tk.BOTH, expand=True, pady=(5, 70))
+    btn1.place(x=100, y=310)
+    btn2.place(x=440, y=310)
+    btn3.pack(side="bottom", pady=5)
+
+def abrirModelosKNN():
+    app = ThemedTk(theme="adapta")
+    app.geometry('600x370')
+    app.resizable(False, False)
+
+    label = tk.Label(app, text="Select INPUTS and TARGET", font=('Helvetica', 12, 'bold'))
+    label.pack(side=tk.TOP)
+ 
+    # Create a listbox
+    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
+    listbox2 = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
+
+    #Creation SCROLLBARS
+    scrollbar = tk.Scrollbar(app)
+    scrollbar.pack(side=LEFT, fill=tk.Y, pady=(5, 70))
+    scrollbar2 = tk.Scrollbar(app)
+    scrollbar2.pack(side=RIGHT, fill=tk.Y, pady=(5, 70))
+ 
+    # Extraemos los datos
+    listaCampos = df.columns.tolist()
+
+    for i in range (len(listaCampos)):
+        listbox.insert(i, listaCampos[i])
+        listbox2.insert(i, listaCampos[i])
+
+    def selected_item():
+        global campos
+        campos = []
+        selected_campos = listbox.curselection()
+        campos = list(selected_campos)
+        print("\nCAMPOS: ", campos)
+
+
+    def selected_item2():
+        global objetivos
+        objetivos = []
+        selected_objetivos = listbox2.curselection()
+        objetivos = list(selected_objetivos)
+        print("\OBJETIVOS: ", objetivos)
+    
+    def select_all():
+        listbox.select_set(0, tk.END)
+    
+    def select_all2():
+        listbox2.select_set(0, tk.END)
+    
+    # Boton para enviar datos
+    btn1 = tk.Button(app, text='Select all', command=select_all)
+    btn2 = tk.Button(app, text='Select all', command=select_all2)
+    btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), knn.solicitarDatosPrueba(), app.destroy()])
 
     # SCROLLBAR
     listbox.config(yscrollcommand=scrollbar.set)

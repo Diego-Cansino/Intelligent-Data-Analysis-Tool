@@ -143,11 +143,12 @@ def CargarDatosPrediccion():
     DTCclassifier.fit(x_train, y_train)
     y_pred_DTC = DTCclassifier.predict(x_test)
 
+    # Hacemos la prueba de efectividad
     DTCAcc = accuracy_score(y_pred_DTC, y_test)
     porcentajePrecision["text"] = str(f'.:. Decision Tree Accuracy: {(DTCAcc*100):.2f}% .:.')
 
+    # Hacemos la predicción
     y_pred = DTCclassifier.predict(df2)
-    print(y_pred)
 
     global listaResultado
     listaResultado = list(y_pred)

@@ -6,8 +6,10 @@ from idlelib.tooltip import Hovertip
 import matplotlib.pyplot as plot
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from tkinter import messagebox as MessageBox
-import tensorflow as tf
 
 def solicitarDatosPrueba():
     # inicializamos la GUI
@@ -68,7 +70,7 @@ def buscarArchivo():
     """Esta funcion abre el explorador de archivos para que se busque un archivo2"""
     archivo2 = filedialog.askopenfilename(initialdir="/",
                                           title="Select a File",
-                                          filetype=(("All Files", "."), ("xlsx files", ".xlsx"), ("csv files", ".csv")))
+                                          filetype=(("All Files", "*.*"), ("xlsx files", ".xlsx"), ("csv files", ".csv")))
     nombreArchivo2["text"] = archivo2
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
@@ -127,58 +129,42 @@ def extraerDatos():
 ############################CODIGO DE REDES NEURONALES#################################################
 
 def CargarDatosPrediccion():
-    MessageBox.showinfo("Wait!", "Generating prediction!")
-    early_stopping = tf.keras.callbacks.EarlyStopping(
-    min_delta=0.001, # minimium amount of change to count as an improvement
-    patience=15, # how many epochs to wait before stopping
-    restore_best_weights=True)
+    x = mn.df.iloc[:, mn.campos]
+    y = mn.df.iloc[:, mn.objetivos]
 
-    # Initialising the NN
-    model = tf.keras.models.Sequential()
+    x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                    test_size = 0.10,
+                                                    shuffle = True,
+                                                    random_state = 1)
 
-    # layers
-    model.add(tf.keras.layers.Dense(units = 16, kernel_initializer = 'uniform', activation = 'relu', input_dim = len(mn.campos)))
-    model.add(tf.keras.layers.Dense(units = 8, kernel_initializer = 'uniform', activation = 'relu'))
-    model.add(tf.keras.layers.Dropout(0.25))
-    model.add(tf.keras.layers.Dense(
-        units=4, kernel_initializer='uniform', activation='relu'))
-    model.add(tf.keras.layers.Dropout(0.5))
-    model.add(tf.keras.layers.Dense(
-        units=1, kernel_initializer='uniform', activation='sigmoid'))
-    # Compiling the ANN
-    model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    #K-vecinos mas cercanos
+    KNNClassifier = KNeighborsClassifier(n_neighbors=20)
+    KNNClassifier.fit(x_train, y_train)
 
-    # Train the ANN
-    datosEntrada = mn.df.iloc[:, mn.campos]
-    print(datosEntrada)
-    datosObjetivo = mn.df.iloc[:, mn.objetivos]
-    print(datosObjetivo)
+    y_pred_KNN = KNNClassifier.predict(x_test)
 
-    global historial
-    historial = model.fit(datosEntrada, datosObjetivo, batch_size = 32, epochs = 500, callbacks=[early_stopping], validation_split=0.2)
+    # Hacemos la prueba de efectividad
+    KNNacc = accuracy_score(y_pred_KNN, y_test)
+    porcentajePrecision["text"] = str(f'.:. KNN Accuracy: {(KNNacc*100):.2f}% .:.')
 
-    y_pred = model.predict(df2)
-    print(y_pred)
-    y_pred = (y_pred > 0.4).astype('int32')
+    # Hacemos la predicción
+    y_pred = KNNClassifier.predict(df2)
 
     global listaResultado
-    listaResultado = []
-    for res in y_pred:
-        for r in res:
-            listaResultado.append(r)
+    listaResultado = list(y_pred)
 
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
     MessageBox.showinfo("Success!", "The task has been performed correctly.")
-    mostrarPrecision()
+    # mostrarPrecision()
 
-def mostrarPrecision():
-    fig, ax = plot.subplots()
-    fig.suptitle("Model Accuracy Result")
-    plot.xlabel("Epoch number")
-    plot.ylabel("Precision")
-    ax.plot(historial.history["accuracy"])
-    porcentajePrecision["text"] = str(f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
-    plot.show()
+# def mostrarPrecision():
+#     fig, ax = plot.subplots()
+#     fig.suptitle("Model Accuracy Result")
+#     plot.xlabel("Epoch number")
+#     plot.ylabel("Precision")
+#     ax.plot(historial.history["accuracy"])
+#     porcentajePrecision["text"] = str(f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
+#     plot.show()
