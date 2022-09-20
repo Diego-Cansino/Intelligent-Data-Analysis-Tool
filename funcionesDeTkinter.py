@@ -495,7 +495,6 @@ def eliminarDatosAtipicos():
 def verificarDatosNulos():
     global df
     registrosVacios = df.isna().sum().sum()
-    # print(f'\n\tEl numero de registros vacios es: ', registrosVacios)
     if registrosVacios > 0:
         MessageBox.showerror("Error", "Data set still has empty values.")
     else:
@@ -677,7 +676,6 @@ def abrirModelos():
         campos = []
         selected_campos = listbox.curselection()
         campos = list(selected_campos)
-        print("\nCAMPOS: ", campos)
 
 
     def selected_item2():
@@ -685,7 +683,6 @@ def abrirModelos():
         objetivos = []
         selected_objetivos = listbox2.curselection()
         objetivos = list(selected_objetivos)
-        print("\OBJETIVOS: ", objetivos)
     
     def select_all():
         listbox.select_set(0, tk.END)
@@ -741,7 +738,6 @@ def abrirModelosArbol():
         campos = []
         selected_campos = listbox.curselection()
         campos = list(selected_campos)
-        print("\nCAMPOS: ", campos)
 
 
     def selected_item2():
@@ -749,7 +745,6 @@ def abrirModelosArbol():
         objetivos = []
         selected_objetivos = listbox2.curselection()
         objetivos = list(selected_objetivos)
-        print("\OBJETIVOS: ", objetivos)
     
     def select_all():
         listbox.select_set(0, tk.END)
@@ -805,7 +800,6 @@ def abrirModelosRL():
         campos = []
         selected_campos = listbox.curselection()
         campos = list(selected_campos)
-        print("\nCAMPOS: ", campos)
 
 
     def selected_item2():
@@ -813,7 +807,6 @@ def abrirModelosRL():
         objetivos = []
         selected_objetivos = listbox2.curselection()
         objetivos = list(selected_objetivos)
-        print("\OBJETIVOS: ", objetivos)
     
     def select_all():
         listbox.select_set(0, tk.END)
@@ -869,7 +862,6 @@ def abrirModelosKNN():
         campos = []
         selected_campos = listbox.curselection()
         campos = list(selected_campos)
-        print("\nCAMPOS: ", campos)
 
 
     def selected_item2():
@@ -877,7 +869,6 @@ def abrirModelosKNN():
         objetivos = []
         selected_objetivos = listbox2.curselection()
         objetivos = list(selected_objetivos)
-        print("\OBJETIVOS: ", objetivos)
     
     def select_all():
         listbox.select_set(0, tk.END)

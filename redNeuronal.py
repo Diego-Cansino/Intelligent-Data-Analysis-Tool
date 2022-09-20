@@ -1,3 +1,4 @@
+from tabnanny import verbose
 import tkinter as tk
 from tkinter import filedialog, ttk
 import pandas as pd
@@ -68,7 +69,7 @@ def buscarArchivo():
     """Esta funcion abre el explorador de archivos para que se busque un archivo2"""
     archivo2 = filedialog.askopenfilename(initialdir="/",
                                           title="Select a File",
-                                          filetype=(("All Files", "."), ("xlsx files", ".xlsx"), ("csv files", ".csv")))
+                                          filetype=(("All Files", "*.*"), ("xlsx files", ".xlsx"), ("csv files", ".csv")))
     nombreArchivo2["text"] = archivo2
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
@@ -127,7 +128,7 @@ def extraerDatos():
 ############################CODIGO DE REDES NEURONALES#################################################
 
 def CargarDatosPrediccion():
-    MessageBox.showinfo("Wait!", "Generating prediction!")
+    MessageBox.showinfo("Wait!", "Generating prediction! Click OK to continue.")
     early_stopping = tf.keras.callbacks.EarlyStopping(
     min_delta=0.001, # minimium amount of change to count as an improvement
     patience=15, # how many epochs to wait before stopping
@@ -150,15 +151,12 @@ def CargarDatosPrediccion():
 
     # Train the ANN
     datosEntrada = mn.df.iloc[:, mn.campos]
-    print(datosEntrada)
     datosObjetivo = mn.df.iloc[:, mn.objetivos]
-    print(datosObjetivo)
 
     global historial
-    historial = model.fit(datosEntrada, datosObjetivo, batch_size = 32, epochs = 500, callbacks=[early_stopping], validation_split=0.2)
+    historial = model.fit(datosEntrada, datosObjetivo, batch_size = 32, epochs = 500, callbacks=[early_stopping], validation_split=0.2, verbose=0)
 
     y_pred = model.predict(df2)
-    print(y_pred)
     y_pred = (y_pred > 0.4).astype('int32')
 
     global listaResultado

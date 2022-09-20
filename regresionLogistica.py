@@ -159,13 +159,3 @@ def CargarDatosPrediccion():
 
     insertarDatosDePrediccion()
     MessageBox.showinfo("Success!", "The task has been performed correctly.")
-    # mostrarPrecision()
-
-# def mostrarPrecision():
-#     fig, ax = plot.subplots()
-#     fig.suptitle("Model Accuracy Result")
-#     plot.xlabel("Epoch number")
-#     plot.ylabel("Precision")
-#     ax.plot(historial.history["accuracy"])
-#     porcentajePrecision["text"] = str(f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
-#     plot.show()
