@@ -140,12 +140,8 @@ def CargarDatosPrediccion():
     # layers
     model.add(tf.keras.layers.Dense(units = 16, kernel_initializer = 'uniform', activation = 'relu', input_dim = len(mn.campos)))
     model.add(tf.keras.layers.Dense(units = 8, kernel_initializer = 'uniform', activation = 'relu'))
-    model.add(tf.keras.layers.Dropout(0.25))
-    model.add(tf.keras.layers.Dense(
-        units=4, kernel_initializer='uniform', activation='relu'))
-    model.add(tf.keras.layers.Dropout(0.5))
-    model.add(tf.keras.layers.Dense(
-        units=1, kernel_initializer='uniform', activation='sigmoid'))
+    model.add(tf.keras.layers.Dense(units=4, kernel_initializer='uniform', activation='relu'))
+    model.add(tf.keras.layers.Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
     # Compiling the ANN
     model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
