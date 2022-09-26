@@ -52,9 +52,6 @@ def solicitarDatosPrueba():
     global nombreArchivo2
     nombreArchivo2 = ttk.Label(archivo2, text="No selected File")
     nombreArchivo2.grid(pady=5, row=0, column=0, columnspan=3)
-    global porcentajePrecision
-    porcentajePrecision = ttk.Label(archivo2, text="")
-    porcentajePrecision.grid(pady=5, row=1, column=0, columnspan=3)
 
     # Treeview Widget
     global tv2
@@ -141,20 +138,19 @@ def CargarDatosPrediccion():
     DTCclassifier = DecisionTreeClassifier(max_depth=3, min_samples_leaf=5, criterion='entropy', min_samples_split=5,
                                        splitter='random', random_state=1)
     DTCclassifier.fit(x_train, y_train)
-    y_pred_DTC = DTCclassifier.predict(x_test)
+    y_pred = DTCclassifier.predict(x_test)
 
     # Hacemos la prueba de efectividad
-    DTCAcc = accuracy_score(y_pred_DTC, y_test)
-    porcentajePrecision["text"] = str(f'.:. Decision Tree Accuracy: {(DTCAcc*100):.2f}% .:.')
+    DTCAccuracy = accuracy_score(y_pred, y_test)
 
     # Hacemos la predicción
-    y_pred = DTCclassifier.predict(df2)
+    prediction = DTCclassifier.predict(df2)
 
     global listaResultado
-    listaResultado = list(y_pred)
+    listaResultado = list(prediction)
 
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
-    MessageBox.showinfo("Success!", "The task has been performed correctly.")
+    MessageBox.showinfo("Success!", f'The accuracy of the model is: {(DTCAccuracy*100):.2f}%')

@@ -51,9 +51,6 @@ def solicitarDatosPrueba():
     global nombreArchivo2
     nombreArchivo2 = ttk.Label(archivo2, text="No selected File")
     nombreArchivo2.grid(pady=5, row=0, column=0, columnspan=3)
-    global porcentajePrecision
-    porcentajePrecision = ttk.Label(archivo2, text="")
-    porcentajePrecision.grid(pady=5, row=1, column=0, columnspan=3)
 
     # Treeview Widget
     global tv2
@@ -165,7 +162,7 @@ def CargarDatosPrediccion():
     limpiarDatos()
 
     insertarDatosDePrediccion()
-    MessageBox.showinfo("Success!", "The task has been performed correctly.")
+    MessageBox.showinfo("Success!", f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
     mostrarPrecision()
 
 def mostrarPrecision():
@@ -174,5 +171,4 @@ def mostrarPrecision():
     plot.xlabel("Epoch number")
     plot.ylabel("Precision")
     ax.plot(historial.history["accuracy"])
-    porcentajePrecision["text"] = str(f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
     plot.show()

@@ -52,9 +52,6 @@ def solicitarDatosPrueba():
     global nombreArchivo2
     nombreArchivo2 = ttk.Label(archivo2, text="No selected File")
     nombreArchivo2.grid(pady=5, row=0, column=0, columnspan=3)
-    global porcentajePrecision
-    porcentajePrecision = ttk.Label(archivo2, text="")
-    porcentajePrecision.grid(pady=5, row=1, column=0, columnspan=3)
 
     # Treeview Widget
     global tv2
@@ -141,20 +138,19 @@ def CargarDatosPrediccion():
     KNNClassifier = KNeighborsClassifier(n_neighbors=20)
     KNNClassifier.fit(x_train, y_train)
 
-    y_pred_KNN = KNNClassifier.predict(x_test)
+    y_pred = KNNClassifier.predict(x_test)
 
     # Hacemos la prueba de efectividad
-    KNNacc = accuracy_score(y_pred_KNN, y_test)
-    porcentajePrecision["text"] = str(f'.:. KNN Accuracy: {(KNNacc*100):.2f}% .:.')
+    KNNaccuracy = accuracy_score(y_pred, y_test)
 
     # Hacemos la predicción
-    y_pred = KNNClassifier.predict(df2)
+    prediction = KNNClassifier.predict(df2)
 
     global listaResultado
-    listaResultado = list(y_pred)
+    listaResultado = list(prediction)
 
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
-    MessageBox.showinfo("Success!", "The task has been performed correctly.")
+    MessageBox.showinfo("Success!", f'The accuracy of the model is: {(KNNaccuracy*100):.2f}%')

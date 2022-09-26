@@ -18,6 +18,7 @@ def abrirMenuPrincipal():
     gui = ThemedTk(theme="adapta")
     # Configuramos la gui
     gui.geometry("750x750")
+    gui.title("Intelligent Data Analysis Tool")
 
     # Frame para el TreeView
     ventana = tk.LabelFrame(gui, text="txt, xlsx and csv files")
@@ -255,17 +256,17 @@ def abrirMenuPrincipal():
                           border=0, command=abrirModelos)
     button3_1.grid(padx=10, pady=5, row=1, column=0)
     Hovertip(button3_1, hover_delay=500,
-             text="Model: Artificial Neural Network")
+             text="Model: Sequential Artificial Neural Network model by Keras.")
 
     img3_2 = Image.open('./img/regresion.png')
     img3_2 = img3_2.resize((90, 90))
     p3.img3_2 = ImageTk.PhotoImage(img3_2, master=p3)
-    button3_2 = tk.Button(p3, text="Linear Regression", image=p3.img3_2,
+    button3_2 = tk.Button(p3, text="Logistic Regression", image=p3.img3_2,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=abrirModelosRL)
     button3_2.grid(padx=10, pady=5, row=1, column=1)
     Hovertip(button3_2, hover_delay=500,
-             text="Model: Linear Regression")
+             text="Model: Logistic regression classifier")
 
     img3_3 = Image.open('./img/arbol.png')
     img3_3 = img3_3.resize((90, 90))
@@ -275,7 +276,7 @@ def abrirMenuPrincipal():
                           border=0, command=abrirModelosArbol)
     button3_3.grid(padx=10, pady=5, row=1, column=2)
     Hovertip(button3_3, hover_delay=500,
-             text="Model: Decision tree")
+             text="Model: Decision tree classifier.")
 
     img3_4 = Image.open('./img/vecinos.png')
     img3_4 = img3_4.resize((90, 90))
@@ -285,7 +286,7 @@ def abrirMenuPrincipal():
                           border=0, command=abrirModelosKNN)
     button3_4.grid(padx=10, pady=5, row=1, column=3)
     Hovertip(button3_4, hover_delay=500,
-             text="Model: KNN")
+             text="Model: Classifier implementing the k-nearest neighbors vote.")
     
     # Agregamos las pestañas creadas
     notebook.add(p1, text='Understanding')
@@ -708,6 +709,14 @@ def abrirModelos():
     btn2.place(x=440, y=310)
     btn3.pack(side="bottom", pady=5)
 
+    # Barra de Menús
+    barraMenu = tk.Menu(app)
+    ## HELP
+    menuHelp = tk.Menu(barraMenu, tearoff=False)
+    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
+    barraMenu.add_cascade(label="Help", menu=menuHelp)
+    app.config(menu=barraMenu)
+
 def abrirModelosArbol():
     app = ThemedTk(theme="adapta")
     app.geometry('600x370')
@@ -769,6 +778,14 @@ def abrirModelosArbol():
     btn1.place(x=100, y=310)
     btn2.place(x=440, y=310)
     btn3.pack(side="bottom", pady=5)
+
+    # Barra de Menús
+    barraMenu = tk.Menu(app)
+    ## HELP
+    menuHelp = tk.Menu(barraMenu, tearoff=False)
+    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
+    barraMenu.add_cascade(label="Help", menu=menuHelp)
+    app.config(menu=barraMenu)
 
 def abrirModelosRL():
     app = ThemedTk(theme="adapta")
@@ -832,6 +849,14 @@ def abrirModelosRL():
     btn2.place(x=440, y=310)
     btn3.pack(side="bottom", pady=5)
 
+    # Barra de Menús
+    barraMenu = tk.Menu(app)
+    ## HELP
+    menuHelp = tk.Menu(barraMenu, tearoff=False)
+    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
+    barraMenu.add_cascade(label="Help", menu=menuHelp)
+    app.config(menu=barraMenu)
+
 def abrirModelosKNN():
     app = ThemedTk(theme="adapta")
     app.geometry('600x370')
@@ -894,6 +919,14 @@ def abrirModelosKNN():
     btn2.place(x=440, y=310)
     btn3.pack(side="bottom", pady=5)
 
+    # Barra de Menús
+    barraMenu = tk.Menu(app)
+    ## HELP
+    menuHelp = tk.Menu(barraMenu, tearoff=False)
+    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
+    barraMenu.add_cascade(label="Help", menu=menuHelp)
+    app.config(menu=barraMenu)
+
 def abrirHelp():
     app = ThemedTk(theme="adapta")
     app.geometry('650x650')
@@ -928,6 +961,28 @@ BUTTONS:\n\n
 \"KNN algorithm\": Implements a model of the KNN algorithm (currently not working).\n\n
 \"Linear Regression\": Implements a Linear Regression model (currently not working).\n\n
 """
+
+    text.configure(state='normal')
+    text.insert(tk.END, help_t, 'formato')
+    text.configure(state='disabled')
+
+
+def abrirHelpModelos():
+    app = ThemedTk(theme="adapta")
+    app.geometry('650x650')
+    app.resizable(False, False)
+
+    scroll = tk.Scrollbar(app)
+    text = tk.Text(app)
+    scroll.pack(side=tk.RIGHT, fill=tk.Y)
+    text.pack(side=tk.LEFT, fill=tk.Y)
+    scroll.config(command=text.yview)
+    text.config(yscrollcommand=scroll.set)
+    text.tag_configure('formato', font=('Arial', 12))
+
+    help_t = """
+        Hola estos son las selecciones de los campos de entrada y objetivo
+    """
 
     text.configure(state='normal')
     text.insert(tk.END, help_t, 'formato')
