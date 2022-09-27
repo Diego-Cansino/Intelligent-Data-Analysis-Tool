@@ -1,7 +1,7 @@
 from tkinter import*
 from PIL import Image, ImageTk, ImageSequence
 import time
-from funcionesDeTkinter import abrirMenuPrincipal
+from ventanaPrincipal import abrirMenuPrincipal
 from ttkthemes import ThemedTk
 
 def play_gif():    

@@ -1,19 +1,22 @@
-from tabnanny import verbose
 import tkinter as tk
 from tkinter import filedialog, ttk
+import warnings
 import pandas as pd
-import funcionesDeTkinter as mn
 from idlelib.tooltip import Hovertip
-import matplotlib.pyplot as plot
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from tkinter import messagebox as MessageBox
-import tensorflow as tf
+from sklearn.exceptions import ConvergenceWarning
 
-def solicitarDatosPrueba():
-    # inicializamos la GUI
-    # gui2 = tk.Tk()
+def solicitarDatosPrueba(df, campos, objetivos, model):
+
+
     gui2 = ThemedTk(theme="adapta")
+
+    datosEntrada = df.iloc[:, campos]
+    datosObjetivo = df.iloc[:, objetivos]
 
     # Configuramos la gui2
     gui2.geometry("650x650")
@@ -42,7 +45,7 @@ def solicitarDatosPrueba():
     gui2.img2 = ImageTk.PhotoImage(img2, master=gui2)
     boton2 = tk.Button(archivo2, text="Make prediction", image=gui2.img2,
                        activebackground="#5ECEF4", compound="top",
-                       border=0, command=lambda: CargarDatosPrediccion())
+                       border=0, command=lambda: CargarDatosPrediccion(datosEntrada, datosObjetivo, model))
     boton2.grid(padx=10, pady=5, row=2, column=2)
     Hovertip(boton2, hover_delay=500,
             text="Makes a prediction based on the selected model and evaluation data")
@@ -124,51 +127,31 @@ def extraerDatos():
 
 ############################CODIGO DE REDES NEURONALES#################################################
 
-def CargarDatosPrediccion():
-    MessageBox.showinfo("Wait!", "Generating prediction! Click OK to continue.")
-    early_stopping = tf.keras.callbacks.EarlyStopping(
-    min_delta=0.001, # minimium amount of change to count as an improvement
-    patience=15, # how many epochs to wait before stopping
-    restore_best_weights=True)
+def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
 
-    # Initialising the NN
-    model = tf.keras.models.Sequential()
+    x_train, x_test, y_train, y_test = train_test_split(datosEntrada, datosObjetivo,
+                                                    test_size = 0.10,
+                                                    shuffle = True,
+                                                    random_state = 1)
 
-    # layers
-    model.add(tf.keras.layers.Dense(units = 16, kernel_initializer = 'uniform', activation = 'relu', input_dim = len(mn.campos)))
-    model.add(tf.keras.layers.Dense(units = 8, kernel_initializer = 'uniform', activation = 'relu'))
-    model.add(tf.keras.layers.Dense(units=4, kernel_initializer='uniform', activation='relu'))
-    model.add(tf.keras.layers.Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
-    # Compiling the ANN
-    model.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+    # Arbol de decision
+    modelClassifier = model
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=ConvergenceWarning, module="sklearn")
+        modelClassifier.fit(x_train, y_train)
+    y_pred = modelClassifier.predict(x_test)
 
-    # Train the ANN
-    datosEntrada = mn.df.iloc[:, mn.campos]
-    datosObjetivo = mn.df.iloc[:, mn.objetivos]
+    # Hacemos la prueba de efectividad
+    modelAccuracy = accuracy_score(y_pred, y_test)
 
-    global historial
-    historial = model.fit(datosEntrada, datosObjetivo, batch_size = 32, epochs = 500, callbacks=[early_stopping], validation_split=0.2, verbose=0)
-
-    y_pred = model.predict(df2)
-    y_pred = (y_pred > 0.4).astype('int32')
+    # Hacemos la predicción
+    prediction = modelClassifier.predict(df2)
 
     global listaResultado
-    listaResultado = []
-    for res in y_pred:
-        for r in res:
-            listaResultado.append(r)
+    listaResultado = list(prediction)
 
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
-    MessageBox.showinfo("Success!", f'The accuracy of the model is: {(historial.history["accuracy"][-1])*100:.2f}%')
-    mostrarPrecision()
-
-def mostrarPrecision():
-    fig, ax = plot.subplots()
-    fig.suptitle("Model Accuracy Result")
-    plot.xlabel("Epoch number")
-    plot.ylabel("Precision")
-    ax.plot(historial.history["accuracy"])
-    plot.show()
+    MessageBox.showinfo("Success!", f'The accuracy of the model is: {(modelAccuracy*100):.2f}%')

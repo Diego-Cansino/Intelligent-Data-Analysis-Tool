@@ -3,11 +3,8 @@ from idlelib.tooltip import Hovertip
 from pathlib import Path
 import tkinter as tk
 import pandas as pd
-import graficos as gf
-import redNeuronal as pr
-import arbolDeDecision as ar
-import kVecinos as knn
-import regresionLogistica as rl
+import ventanaSeleccion as v
+import ventanaGraphs as gh
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
@@ -61,7 +58,7 @@ def abrirMenuPrincipal():
     p1.img1_2 = ImageTk.PhotoImage(img1_2, master=p1)
     button1_2 = tk.Button(p1, text="Graphing data", image=p1.img1_2,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: abrirGraficos())
+                          border=0, command=lambda: gh.abrirGraficos(df))
     button1_2.grid(padx=10, pady=5, row=1, column=1)
     Hovertip(button1_2, hover_delay=500,
              text="Open a window with options for plotting")
@@ -98,7 +95,7 @@ def abrirMenuPrincipal():
     Hovertip(button2_1, hover_delay=500,
              text="Data Selection")
     ### LIMPIEZA DE DATOS
-    e_limpieza = ttk.Label(p2_2, text="CLEANING DATA", font=('Helvetica', 12, 'bold'))
+    e_limpieza = ttk.Label(p2_2, text="DATA CLEANING", font=('Helvetica', 12, 'bold'))
     e_limpieza.grid(pady=5, row=3, column=0)
 
     img2_2 = Image.open('./img/FFILL.png')
@@ -253,7 +250,7 @@ def abrirMenuPrincipal():
     p3.img3_1 = ImageTk.PhotoImage(img3_1, master=p3)
     button3_1 = tk.Button(p3, text="Artificial Neural Network", image=p3.img3_1,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=abrirModelos)
+                          border=0, command=lambda: v.abrirModelos(df, "ann"))
     button3_1.grid(padx=10, pady=5, row=1, column=0)
     Hovertip(button3_1, hover_delay=500,
              text="Model: Sequential Artificial Neural Network model by Keras.")
@@ -263,7 +260,7 @@ def abrirMenuPrincipal():
     p3.img3_2 = ImageTk.PhotoImage(img3_2, master=p3)
     button3_2 = tk.Button(p3, text="Logistic Regression", image=p3.img3_2,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=abrirModelosRL)
+                          border=0, command=lambda: v.abrirModelos(df, "lr"))
     button3_2.grid(padx=10, pady=5, row=1, column=1)
     Hovertip(button3_2, hover_delay=500,
              text="Model: Logistic regression classifier")
@@ -273,7 +270,7 @@ def abrirMenuPrincipal():
     p3.img3_3 = ImageTk.PhotoImage(img3_3, master=p3)
     button3_3 = tk.Button(p3, text="Decision tree", image=p3.img3_3,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=abrirModelosArbol)
+                          border=0, command=lambda: v.abrirModelos(df, "dt"))
     button3_3.grid(padx=10, pady=5, row=1, column=2)
     Hovertip(button3_3, hover_delay=500,
              text="Model: Decision tree classifier.")
@@ -283,7 +280,7 @@ def abrirMenuPrincipal():
     p3.img3_4 = ImageTk.PhotoImage(img3_4, master=p3)
     button3_4 = tk.Button(p3, text="KNN", image=p3.img3_4,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=abrirModelosKNN)
+                          border=0, command=lambda: v.abrirModelos(df, "knn"))
     button3_4.grid(padx=10, pady=5, row=1, column=3)
     Hovertip(button3_4, hover_delay=500,
              text="Model: Classifier implementing the k-nearest neighbors vote.")
@@ -513,420 +510,6 @@ def guardarComoDataframeExcel():
         "xlsx files", ".xlsx")], defaultextension="*.xlsx")
     df.to_excel(file, index=False, header=True)
 
-def abrirGraficos():
-    try:
-        app = ThemedTk(theme="adapta")
-        app.geometry('650x420')
-        app.resizable(False, False)
-        app.title("Graphing Data")
-
-        graficos = ttk.Label(app, text="GRAPHING DATA", font=('Helvetica', 15, 'bold'))
-        graficos.grid(pady=5, row=0, column=0, columnspan=4)
-
-        # Declaramos los label
-        label1 = ttk.Label(app, text="Choose the type of chart: ",
-                           font=('Helvetica', 12, 'bold'))
-        label1.grid(pady=5, row=1, column=0)
-
-        opcion = tk.IntVar()
-
-        imgbV = Image.open('./img/barrasVerticales.png')
-        imgbV = imgbV.resize((100, 100))
-        app.imgbV = ImageTk.PhotoImage(imgbV, master=app)
-        buttonbV = tk.Radiobutton(app, image=app.imgbV, text="Vertical Bar Graph",
-                                  activebackground="#5ECEF4", border=0, 
-                                  variable=opcion, value=0, compound="top",)
-        buttonbV.grid(padx=10, pady=5, row=2, column=0)
-        Hovertip(buttonbV, hover_delay=500,
-                 text="Vertical Bar Graph")
-
-        imgbH = Image.open('./img/barrasHorizontales.png')
-        imgbH = imgbH.resize((100, 100))
-        app.imgbH = ImageTk.PhotoImage(imgbH, master=app)
-        buttonbH = tk.Radiobutton(app, image=app.imgbH, text="Horizontal Bar Graph",
-                                  activebackground="#5ECEF4", compound="top",
-                                  border=0, variable=opcion, value=1)
-        buttonbH.grid(padx=10, pady=5, row=2, column=1)
-        Hovertip(buttonbH, hover_delay=500,
-                 text="Horizontal Bar Graph")
-
-        imgDisp = Image.open('./img/dispersion.png')
-        imgDisp = imgDisp.resize((100, 100))
-        app.imgDisp = ImageTk.PhotoImage(imgDisp, master=app)
-        buttonDisp = tk.Radiobutton(app, image=app.imgDisp, text="Dispersion",
-                                    activebackground="#5ECEF4", compound="top",
-                                    border=0, variable=opcion, value=2)
-        buttonDisp.grid(padx=10, pady=5, row=2, column=2)
-        Hovertip(buttonDisp, hover_delay=500,
-                 text="Dispersion")
-
-        imgLin = Image.open('./img/linear.png')
-        imgLin = imgLin.resize((100, 100))
-        app.imgLin = ImageTk.PhotoImage(imgLin, master=app)
-        buttonLin = tk.Radiobutton(app, image=app.imgLin, text="Linear",
-                                   activebackground="#5ECEF4", compound="top",
-                                   border=0, variable=opcion, value=3)
-        buttonLin.grid(padx=10, pady=5, row=2, column=3)
-        Hovertip(buttonLin, hover_delay=500,
-                 text="Linear")
-
-        imgArea = Image.open('./img/area.png')
-        imgArea = imgArea.resize((100, 100))
-        app.imgArea = ImageTk.PhotoImage(imgArea, master=app)
-        buttonArea = tk.Radiobutton(app, image=app.imgArea, text="Area",
-                                    activebackground="#5ECEF4", compound="top",
-                                    border=0, variable=opcion, value=4)
-        buttonArea.grid(padx=10, pady=5, row=3, column=0)
-        Hovertip(buttonArea, hover_delay=500,
-                 text="Area")
-
-        imgHist = Image.open('./img/histograma.png')
-        imgHist = imgHist.resize((100, 100))
-        app.imgHist = ImageTk.PhotoImage(imgHist, master=app)
-        buttonHist = tk.Radiobutton(app, image=app.imgHist, text="Histogram",
-                                    activebackground="#5ECEF4", compound="top",
-                                    border=0, variable=opcion, value=5)
-        buttonHist.grid(padx=10, pady=5, row=3, column=1)
-        Hovertip(buttonHist, hover_delay=500,
-                 text="Histogram")
-
-        imgPie = Image.open('./img/pie.png')
-        imgPie = imgPie.resize((100, 100))
-        app.imgPie = ImageTk.PhotoImage(imgPie, master=app)
-        buttonPie = tk.Radiobutton(app, image=app.imgPie, text="Pie Chart",
-                                   activebackground="#5ECEF4", compound="top",
-                                   border=0, variable=opcion, value=6)
-        buttonPie.grid(padx=10, pady=5, row=3, column=2)
-        Hovertip(buttonPie, hover_delay=500,
-                 text="Pie Chart")
-
-        listaColumnas = df.columns.tolist()
-
-        label2 = ttk.Label(app, text="Value of X: ",
-                           font=('Helvetica', 12, 'bold'))
-        label2.grid(pady=5, column=0, row=4)
-
-        label3 = ttk.Label(app, text="Value of Y: ",
-                           font=('Helvetica', 12, 'bold'))
-        label3.grid(pady=5, column=2, row=4)
-
-        # # Declaramos las opciones
-        lista2 = ttk.Combobox(app, state="readonly", values=listaColumnas)
-        lista2.grid(pady=5, column=1, row=4)
-        lista2.current(0)
-
-        lista3 = ttk.Combobox(app, state="readonly", values=listaColumnas)
-        lista3.grid(pady=5, column=3, row=4)
-        lista3.current(0)
-
-        boton = tk.Button(app, text="Graph the data", background="#5ECEF4",
-                          command=lambda: graficar(
-                            int(opcion.get()), df[lista2.get()], df[lista3.get()], lista2.get(), lista3.get()))
-        boton.grid(pady=5, row=5, column=0, columnspan=4, sticky="ew")
-
-    except Exception as e:
-        tk.messagebox.showerror(
-            "Error", e
-        )
-        return None
-    
-
-def graficar(tipoGrafica, ValoresX, ValoresY, etiquetaX, etiquetaY):
-    if(tipoGrafica == 0):
-        gf.diagramaBarrasVerticales(ValoresX, ValoresY, etiquetaX, etiquetaY)
-    elif(tipoGrafica == 1):
-        gf.diagramaBarrasHorizontales(ValoresX, ValoresY, etiquetaX, etiquetaY)
-    elif(tipoGrafica == 2):
-        gf.diagramaDispersion(ValoresX, ValoresY, etiquetaX, etiquetaY)
-    elif(tipoGrafica == 3):
-        gf.diagramaLineas(ValoresX, ValoresY, etiquetaX, etiquetaY)
-    elif(tipoGrafica == 4):
-        gf.diagramaAreas(ValoresX, ValoresY, etiquetaX, etiquetaY)
-    elif(tipoGrafica == 5):
-        gf.histograma(ValoresX, etiquetaX)
-    elif(tipoGrafica == 6):
-        gf.diagramaSectores(ValoresX)
-
-def abrirModelos():
-    app = ThemedTk(theme="adapta")
-    app.geometry('600x370')
-    app.resizable(False, False)
-
-    label = tk.Label(app, text="Select INPUTS and TARGET", font=('Helvetica', 12, 'bold'))
-    label.pack(side=tk.TOP)
- 
-    # Create a listbox
-    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-    listbox2 = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-
-    #Creation SCROLLBARS
-    scrollbar = tk.Scrollbar(app)
-    scrollbar.pack(side=LEFT, fill=tk.Y, pady=(5, 70))
-    scrollbar2 = tk.Scrollbar(app)
-    scrollbar2.pack(side=RIGHT, fill=tk.Y, pady=(5, 70))
- 
-    # Extraemos los datos
-    listaCampos = df.columns.tolist()
-
-    for i in range (len(listaCampos)):
-        listbox.insert(i, listaCampos[i])
-        listbox2.insert(i, listaCampos[i])
-
-    def selected_item():
-        global campos
-        campos = []
-        selected_campos = listbox.curselection()
-        campos = list(selected_campos)
-
-
-    def selected_item2():
-        global objetivos
-        objetivos = []
-        selected_objetivos = listbox2.curselection()
-        objetivos = list(selected_objetivos)
-    
-    def select_all():
-        listbox.select_set(0, tk.END)
-    
-    def select_all2():
-        listbox2.select_set(0, tk.END)
-    
-    # Boton para enviar datos
-    btn1 = tk.Button(app, text='Select all', command=select_all)
-    btn2 = tk.Button(app, text='Select all', command=select_all2)
-    btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), pr.solicitarDatosPrueba(), app.destroy()])
-
-    # SCROLLBAR
-    listbox.config(yscrollcommand=scrollbar.set)
-    scrollbar.config(command=listbox.yview)
-    listbox2.config(yscrollcommand=scrollbar2.set)
-    scrollbar2.config(command=listbox2.yview)
-    
-    # Placing the button and listbox
-    listbox.pack(side=LEFT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    listbox2.pack(side=RIGHT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    btn1.place(x=100, y=310)
-    btn2.place(x=440, y=310)
-    btn3.pack(side="bottom", pady=5)
-
-    # Barra de Menús
-    barraMenu = tk.Menu(app)
-    ## HELP
-    menuHelp = tk.Menu(barraMenu, tearoff=False)
-    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
-    barraMenu.add_cascade(label="Help", menu=menuHelp)
-    app.config(menu=barraMenu)
-
-def abrirModelosArbol():
-    app = ThemedTk(theme="adapta")
-    app.geometry('600x370')
-    app.resizable(False, False)
-
-    label = tk.Label(app, text="Select INPUTS and TARGET", font=('Helvetica', 12, 'bold'))
-    label.pack(side=tk.TOP)
- 
-    # Create a listbox
-    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-    listbox2 = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-
-    #Creation SCROLLBARS
-    scrollbar = tk.Scrollbar(app)
-    scrollbar.pack(side=LEFT, fill=tk.Y, pady=(5, 70))
-    scrollbar2 = tk.Scrollbar(app)
-    scrollbar2.pack(side=RIGHT, fill=tk.Y, pady=(5, 70))
- 
-    # Extraemos los datos
-    listaCampos = df.columns.tolist()
-
-    for i in range (len(listaCampos)):
-        listbox.insert(i, listaCampos[i])
-        listbox2.insert(i, listaCampos[i])
-
-    def selected_item():
-        global campos
-        campos = []
-        selected_campos = listbox.curselection()
-        campos = list(selected_campos)
-
-
-    def selected_item2():
-        global objetivos
-        objetivos = []
-        selected_objetivos = listbox2.curselection()
-        objetivos = list(selected_objetivos)
-    
-    def select_all():
-        listbox.select_set(0, tk.END)
-    
-    def select_all2():
-        listbox2.select_set(0, tk.END)
-    
-    # Boton para enviar datos
-    btn1 = tk.Button(app, text='Select all', command=select_all)
-    btn2 = tk.Button(app, text='Select all', command=select_all2)
-    btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), ar.solicitarDatosPrueba(), app.destroy()])
-
-    # SCROLLBAR
-    listbox.config(yscrollcommand=scrollbar.set)
-    scrollbar.config(command=listbox.yview)
-    listbox2.config(yscrollcommand=scrollbar2.set)
-    scrollbar2.config(command=listbox2.yview)
-    
-    # Placing the button and listbox
-    listbox.pack(side=LEFT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    listbox2.pack(side=RIGHT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    btn1.place(x=100, y=310)
-    btn2.place(x=440, y=310)
-    btn3.pack(side="bottom", pady=5)
-
-    # Barra de Menús
-    barraMenu = tk.Menu(app)
-    ## HELP
-    menuHelp = tk.Menu(barraMenu, tearoff=False)
-    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
-    barraMenu.add_cascade(label="Help", menu=menuHelp)
-    app.config(menu=barraMenu)
-
-def abrirModelosRL():
-    app = ThemedTk(theme="adapta")
-    app.geometry('600x370')
-    app.resizable(False, False)
-
-    label = tk.Label(app, text="Select INPUTS and TARGET", font=('Helvetica', 12, 'bold'))
-    label.pack(side=tk.TOP)
- 
-    # Create a listbox
-    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-    listbox2 = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-
-    #Creation SCROLLBARS
-    scrollbar = tk.Scrollbar(app)
-    scrollbar.pack(side=LEFT, fill=tk.Y, pady=(5, 70))
-    scrollbar2 = tk.Scrollbar(app)
-    scrollbar2.pack(side=RIGHT, fill=tk.Y, pady=(5, 70))
- 
-    # Extraemos los datos
-    listaCampos = df.columns.tolist()
-
-    for i in range (len(listaCampos)):
-        listbox.insert(i, listaCampos[i])
-        listbox2.insert(i, listaCampos[i])
-
-    def selected_item():
-        global campos
-        campos = []
-        selected_campos = listbox.curselection()
-        campos = list(selected_campos)
-
-
-    def selected_item2():
-        global objetivos
-        objetivos = []
-        selected_objetivos = listbox2.curselection()
-        objetivos = list(selected_objetivos)
-    
-    def select_all():
-        listbox.select_set(0, tk.END)
-    
-    def select_all2():
-        listbox2.select_set(0, tk.END)
-    
-    # Boton para enviar datos
-    btn1 = tk.Button(app, text='Select all', command=select_all)
-    btn2 = tk.Button(app, text='Select all', command=select_all2)
-    btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), rl.solicitarDatosPrueba(), app.destroy()])
-
-    # SCROLLBAR
-    listbox.config(yscrollcommand=scrollbar.set)
-    scrollbar.config(command=listbox.yview)
-    listbox2.config(yscrollcommand=scrollbar2.set)
-    scrollbar2.config(command=listbox2.yview)
-    
-    # Placing the button and listbox
-    listbox.pack(side=LEFT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    listbox2.pack(side=RIGHT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    btn1.place(x=100, y=310)
-    btn2.place(x=440, y=310)
-    btn3.pack(side="bottom", pady=5)
-
-    # Barra de Menús
-    barraMenu = tk.Menu(app)
-    ## HELP
-    menuHelp = tk.Menu(barraMenu, tearoff=False)
-    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
-    barraMenu.add_cascade(label="Help", menu=menuHelp)
-    app.config(menu=barraMenu)
-
-def abrirModelosKNN():
-    app = ThemedTk(theme="adapta")
-    app.geometry('600x370')
-    app.resizable(False, False)
-
-    label = tk.Label(app, text="Select INPUTS and TARGET", font=('Helvetica', 12, 'bold'))
-    label.pack(side=tk.TOP)
- 
-    # Create a listbox
-    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-    listbox2 = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE, exportselection=False)
-
-    #Creation SCROLLBARS
-    scrollbar = tk.Scrollbar(app)
-    scrollbar.pack(side=LEFT, fill=tk.Y, pady=(5, 70))
-    scrollbar2 = tk.Scrollbar(app)
-    scrollbar2.pack(side=RIGHT, fill=tk.Y, pady=(5, 70))
- 
-    # Extraemos los datos
-    listaCampos = df.columns.tolist()
-
-    for i in range (len(listaCampos)):
-        listbox.insert(i, listaCampos[i])
-        listbox2.insert(i, listaCampos[i])
-
-    def selected_item():
-        global campos
-        campos = []
-        selected_campos = listbox.curselection()
-        campos = list(selected_campos)
-
-
-    def selected_item2():
-        global objetivos
-        objetivos = []
-        selected_objetivos = listbox2.curselection()
-        objetivos = list(selected_objetivos)
-    
-    def select_all():
-        listbox.select_set(0, tk.END)
-    
-    def select_all2():
-        listbox2.select_set(0, tk.END)
-    
-    # Boton para enviar datos
-    btn1 = tk.Button(app, text='Select all', command=select_all)
-    btn2 = tk.Button(app, text='Select all', command=select_all2)
-    btn3 = tk.Button(app, text='Send selection', command=lambda: [selected_item(), selected_item2(), knn.solicitarDatosPrueba(), app.destroy()])
-
-    # SCROLLBAR
-    listbox.config(yscrollcommand=scrollbar.set)
-    scrollbar.config(command=listbox.yview)
-    listbox2.config(yscrollcommand=scrollbar2.set)
-    scrollbar2.config(command=listbox2.yview)
-    
-    # Placing the button and listbox
-    listbox.pack(side=LEFT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    listbox2.pack(side=RIGHT, fill=tk.BOTH, expand=True, pady=(5, 70))
-    btn1.place(x=100, y=310)
-    btn2.place(x=440, y=310)
-    btn3.pack(side="bottom", pady=5)
-
-    # Barra de Menús
-    barraMenu = tk.Menu(app)
-    ## HELP
-    menuHelp = tk.Menu(barraMenu, tearoff=False)
-    menuHelp.add_command(label="Help", command=lambda: abrirHelpModelos())
-    barraMenu.add_cascade(label="Help", menu=menuHelp)
-    app.config(menu=barraMenu)
-
 def abrirHelp():
     app = ThemedTk(theme="adapta")
     app.geometry('650x650')
@@ -961,28 +544,6 @@ BUTTONS:\n\n
 \"KNN algorithm\": Implements a model of the KNN algorithm (currently not working).\n\n
 \"Linear Regression\": Implements a Linear Regression model (currently not working).\n\n
 """
-
-    text.configure(state='normal')
-    text.insert(tk.END, help_t, 'formato')
-    text.configure(state='disabled')
-
-
-def abrirHelpModelos():
-    app = ThemedTk(theme="adapta")
-    app.geometry('650x650')
-    app.resizable(False, False)
-
-    scroll = tk.Scrollbar(app)
-    text = tk.Text(app)
-    scroll.pack(side=tk.RIGHT, fill=tk.Y)
-    text.pack(side=tk.LEFT, fill=tk.Y)
-    scroll.config(command=text.yview)
-    text.config(yscrollcommand=scroll.set)
-    text.tag_configure('formato', font=('Arial', 12))
-
-    help_t = """
-        Hola estos son las selecciones de los campos de entrada y objetivo
-    """
 
     text.configure(state='normal')
     text.insert(tk.END, help_t, 'formato')
