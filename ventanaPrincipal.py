@@ -11,8 +11,8 @@ from tkinter import messagebox as MessageBox
 
 def abrirMenuPrincipal():
     # inicializamos la GUI
-    # gui = ThemedTk(theme="adapta")
     gui = ThemedTk(theme="adapta")
+
     # Configuramos la gui
     gui.geometry("750x750")
     gui.title("Intelligent Data Analysis Tool")
@@ -33,12 +33,14 @@ def abrirMenuPrincipal():
     # Panel para las pestañas
     notebook = ttk.Notebook(archivo)
     notebook.pack(fill='both', expand='yes')
+
     # Creacion de las pestañas
     p1 = ttk.Frame(notebook)
     p2 = ttk.Frame(notebook)
     p3 = ttk.Frame(notebook)
     
     # Elementos Pestaña 1
+
     ## COMPRENSION DE LOS DATOS
     e_comprension = ttk.Label(p1, text="DATA UNDERSTANDING", font=('Helvetica', 15, 'bold'))
     e_comprension.grid(pady=5, row=0, column=0, columnspan=2)
@@ -78,9 +80,11 @@ def abrirMenuPrincipal():
     p2_2 = tk.Frame(canvas, border=0)
     p2_2.bind('<MouseWheel>', lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
     canvas.create_window((0, 0), window=p2_2, anchor="nw", width=(canvas.winfo_width()-yscroll.winfo_width()))
+   
     ## PREPARACIÓN DE LOS DATOS
     e_preparacion = ttk.Label(p2_2, text="DATA PREPARATION", font=('Helvetica', 15, 'bold'))
     e_preparacion.grid(pady=5, row=0, column=0, columnspan=4)
+    
     ### SELECCION DE DATOS
     e_seleccion = ttk.Label(p2_2, text="DATA SELECTION", font=('Helvetica', 12, 'bold'))
     e_seleccion.grid(pady=5, row=1, column=0)
@@ -94,6 +98,7 @@ def abrirMenuPrincipal():
     button2_1.grid(padx=10, pady=5, row=2, column=0)
     Hovertip(button2_1, hover_delay=500,
              text="Data Selection")
+    
     ### LIMPIEZA DE DATOS
     e_limpieza = ttk.Label(p2_2, text="DATA CLEANING", font=('Helvetica', 12, 'bold'))
     e_limpieza.grid(pady=5, row=3, column=0)
@@ -241,6 +246,7 @@ def abrirMenuPrincipal():
             text="Data format")
 
     # Elementos Pestaña 3
+   
     ## TECNICAS DE MODELADO
     e_modelado = ttk.Label(p3, text="MODELING", font=('Helvetica', 15, 'bold'))
     e_modelado.grid(pady=5, row=0, column=0, columnspan=4)
@@ -292,10 +298,12 @@ def abrirMenuPrincipal():
 
     # Barra de Menús
     barraMenu = tk.Menu(gui)
+    
     ## HELP
     menuHelp = tk.Menu(barraMenu, tearoff=False)
     menuHelp.add_command(label="Help", command=lambda: abrirHelp())
     barraMenu.add_cascade(label="Help", menu=menuHelp)
+    
     ## SAVE and SAVE AS
     menuSave = tk.Menu(barraMenu, tearoff=False)
     menuSave.add_command(
@@ -309,18 +317,23 @@ def abrirMenuPrincipal():
     # Treeview Widget
     global tv1
     tv1 = ttk.Treeview(ventana)
+    
     # establecemos el ancho y el alto del Widget al 100% de su contenedor (ventana).
     tv1.place(relheight=1, relwidth=1)
 
     # comando para actualizar el eje y de la ventana
     treescrolly = tk.Scrollbar(ventana, orient="vertical", command=tv1.yview)
+    
     # comando para actualizar el eje x de la ventana
     treescrollx = tk.Scrollbar(ventana, orient="horizontal", command=tv1.xview)
+    
     # asignamos el Scrollbar al Treeview Widget
     tv1.configure(xscrollcommand=treescrollx.set,
                   yscrollcommand=treescrolly.set)
+   
     # posicionamos el Scrollbar del eje x
     treescrollx.pack(side="bottom", fill="x")
+    
     # posicionamos el Scrollbar del eje y
     treescrolly.pack(side="right", fill="y")
 
@@ -339,13 +352,11 @@ def extraerDatos():
 
     except ValueError:
         tk.messagebox.showerror("Information", "The file is Invalid")
-        return None
+        
     except FileNotFoundError:
         tk.messagebox.showerror(
             "Information", f"File was not found in the path {rutaArchivo}")
         df = []
-        return None
-
 
 def buscarArchivo():
     """Esta funcion abre el explorador de archivos para que se busque un archivo"""
@@ -361,23 +372,26 @@ def buscarArchivo():
 
     insertarDatosTreeView()
 
-    return None
-
-
 def insertarDatosTreeView():
     # Llenamos el widget con nuestros datos
-    tv1["column"] = list(df.columns)
+    col_df = list( df.columns)
+    col_df.insert(0, 'Index')
+    tv1["column"] = col_df
     tv1["show"] = "headings"
+    tv1.heading("Index", text="Index")
+    
     for column in tv1["columns"]:
         # titulo de la columna = nombre de la columna
         tv1.heading(column, text=column)
 
     df_rows = df.to_numpy().tolist()  # Convertimos el dataframe en una lista de listas
+    i = 1
+    
     for row in df_rows:
         # insertamos cada una de las listas dentro del treeview.
+        row.insert(0,i)
         tv1.insert("", "end", values=row)
-    return None
-
+        i+=1
 
 def cargarDatosExcel():
     """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
@@ -387,13 +401,9 @@ def cargarDatosExcel():
     limpiarDatos()
 
     insertarDatosTreeView()
-    return None
-
-
+    
 def limpiarDatos():
     tv1.delete(*tv1.get_children())
-    return None
-
 
 def limpiarDatosForwardFill():
     """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
@@ -403,7 +413,6 @@ def limpiarDatosForwardFill():
     insertarDatosTreeView()
     verificarDatosNulos()
 
-
 def limpiarDatosBackwardFill():
     """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
     limpiarDatos()
@@ -411,7 +420,6 @@ def limpiarDatosBackwardFill():
     df = df.fillna(method="backfill")
     insertarDatosTreeView()
     verificarDatosNulos()
-
 
 def limpiarDatosColumnaVacia():
     """Si el archivo seleccionado es valido, este se mostrará en la GUI"""

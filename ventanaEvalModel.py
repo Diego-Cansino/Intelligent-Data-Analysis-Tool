@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from tkinter import messagebox as MessageBox
-from sklearn.exceptions import ConvergenceWarning
+from sklearn.exceptions import DataConversionWarning
 
 def solicitarDatosPrueba(df, campos, objetivos, model):
 
@@ -79,20 +79,27 @@ def buscarArchivo():
     insertarDatosTreeView()
 
 def limpiarDatos():
-    tv2.delete(*tv2.get_children())
-    return None
+    tv2.delete(*tv2.get_children())   
 
 def insertarDatosTreeView():
     # Llenamos el widget con nuestros datos
-    tv2["column"] = list(df2.columns)
+    col_df = list( df2.columns)
+    col_df.insert(0, 'Index')
+    tv2["column"] = col_df
     tv2["show"] = "headings"
+    tv2.heading("Index", text="Index")
+
     for column in tv2["columns"]:
         tv2.heading(column, text=column) # titulo de la columna = nombre de la columna
 
     df_rows = df2.to_numpy().tolist() # Convertimos el dataframe en una lista de listas
+    i = 1
+
     for row in df_rows:
-        tv2.insert("", "end", values=row) # insertamos cada una de las listas dentro del treeview.
-    return None
+        # insertamos cada una de las listas dentro del treeview.
+        row.insert(0,i)
+        tv2.insert("", "end", values=row)
+        i+=1
 
 def insertarDatosDePrediccion():
     tv2["column"] = "Predict"
@@ -102,8 +109,7 @@ def insertarDatosDePrediccion():
 
     df_rows = listaResultado # Convertimos el dataframe en una lista de listas
     for row in df_rows:
-        tv2.insert("", "end", values=row) # insertamos cada una de las listas dentro del treeview.
-    return None
+        tv2.insert("", "end", values=row) # insertamos cada una de las listas dentro del treeview.  
 
 def extraerDatos():
     """ Esta funcion extrae los datos del archivo2 seleccionado """
@@ -120,14 +126,16 @@ def extraerDatos():
 
     except ValueError:
         tk.messagebox.showerror("Information", "The file is Invalid")
-        return None
+        
     except FileNotFoundError:
         tk.messagebox.showerror("Information", f"File was not found in the path {rutaArchivo}")
-        return None
+        
 
 ############################CODIGO DE REDES NEURONALES#################################################
 
 def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
+
+    warnings.filterwarnings(action='ignore', category=DataConversionWarning)
 
     x_train, x_test, y_train, y_test = train_test_split(datosEntrada, datosObjetivo,
                                                     test_size = 0.10,
@@ -136,9 +144,9 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
 
     # Arbol de decision
     modelClassifier = model
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=ConvergenceWarning, module="sklearn")
-        modelClassifier.fit(x_train, y_train)
+    
+    modelClassifier.fit(x_train, y_train)
+
     y_pred = modelClassifier.predict(x_test)
 
     # Hacemos la prueba de efectividad
