@@ -3,6 +3,7 @@ from ttkthemes import ThemedTk
 from tkinter import LEFT, RIGHT
 import ventanaEvalModel as em
 import models
+import datacleaning as dt
 
 def abrirModelos(df, model):
     app = ThemedTk(theme="adapta")
@@ -96,6 +97,46 @@ def abrirHelpModelos():
     text.configure(state='normal')
     text.insert(tk.END, help_t, 'formato')
     text.configure(state='disabled')
+
+def selectCamposDC(df, cleaningMethod):
+    app = ThemedTk(theme="adapta")
+    app.geometry('180x200')
+    app.title("Data cleaning selection")
+
+    label = tk.Label(app, text="Select columns for data cleaning")
+    label.pack(side=tk.TOP, fill=tk.X)
+
+    scrollbar = tk.Scrollbar(app)
+    scrollbar.pack(side=RIGHT, fill=tk.Y)
+ 
+    # Create a listbox
+    listbox = tk.Listbox(app, width=40, height=10, selectmode=tk.MULTIPLE)
+ 
+    # Inserting the listbox items
+    listaColumnas = tuple(df.columns.tolist())
+    listbox.insert(tk.END, *listaColumnas)
+    
+    def selected_item():
+        camposDataCleaning = []
+        selected_campos = listbox.curselection()
+        camposDataCleaning = list(selected_campos)
+        return camposDataCleaning
+    
+    def select_all():
+        listbox.select_set(0, tk.END)
+    
+    # Boton para enviar datos
+    btn = tk.Button(app, text='Send selection', command= lambda: [dt.realizarLimpieza(df, selected_item(), cleaningMethod), app.destroy()])
+    btn2 = tk.Button(app, text='select all', command=select_all)
+
+    # SCROLLBAR
+    listbox.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=listbox.yview)
+    
+    # Placing the button and listbox
+    btn.pack(side='bottom', fill=tk.X)
+    btn2.pack(side='bottom', fill=tk.X)
+    listbox.pack()
 
 def selectModel(model):
     if model == "ann":

@@ -108,7 +108,7 @@ def abrirMenuPrincipal():
     p2_2.img2_2 = ImageTk.PhotoImage(img2_2, master=p2_2)
     button2_2 = tk.Button(p2_2, text="FFILL", image=p2_2.img2_2,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: limpiarDatosForwardFill())
+                          border=0, command=lambda: v.selectCamposDC(df, 'FFILL'))
     button2_2.grid(padx=10, pady=5, row=4, column=0)
     Hovertip(button2_2, hover_delay=500,
              text="Cleaning data using functionality FFILL: Any missing value is filled based on the corresponding value in the previous row.")
@@ -118,7 +118,7 @@ def abrirMenuPrincipal():
     p2_2.img2_3 = ImageTk.PhotoImage(img2_3, master=p2_2)
     button2_3 = tk.Button(p2_2, text="BFILL", image=p2_2.img2_3,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: limpiarDatosBackwardFill())
+                          border=0, command=lambda: v.selectCamposDC(df, 'BFILL'))
     button2_3.grid(padx=10, pady=5, row=4, column=1)
     Hovertip(button2_3, hover_delay=500,
              text="Cleaning data using functionality BFILL: Is used to backward fill the missing values in the dataset.")
@@ -148,7 +148,7 @@ def abrirMenuPrincipal():
     p2_2.img2_6 = ImageTk.PhotoImage(img2_6, master=p2_2)
     button2_6 = tk.Button(p2_2, text="standardize data", image=p2_2.img2_6,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: normalizarDatos())
+                          border=0, command=lambda: v.selectCamposDC(df, 'norma'))
     button2_6.grid(padx=10, pady=5, row=4, column=4)
     Hovertip(button2_6, hover_delay=500,
              text="standardize atypical data")
@@ -158,7 +158,7 @@ def abrirMenuPrincipal():
     p2_2.img2_7 = ImageTk.PhotoImage(img2_7, master=p2_2)
     button2_7 = tk.Button(p2_2, text="MEAN", image=p2_2.img2_7,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: rellenarDatosMedia())
+                          border=0, command=lambda: v.selectCamposDC(df, 'media'))
     button2_7.grid(padx=10, pady=5, row=5, column=0)
     Hovertip(button2_7, hover_delay=500,
              text="Cleaning data using statistical method Mean")
@@ -168,7 +168,7 @@ def abrirMenuPrincipal():
     p2_2.img2_8 = ImageTk.PhotoImage(img2_8, master=p2_2)
     button2_8 = tk.Button(p2_2, text="MEDIAN", image=p2_2.img2_8,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: rellenarDatosMediana())
+                          border=0, command=lambda: v.selectCamposDC(df, 'mediana'))
     button2_8.grid(padx=10, pady=5, row=5, column=1)
     Hovertip(button2_8, hover_delay=500,
              text="Cleaning data using statistical method Median")
@@ -178,7 +178,7 @@ def abrirMenuPrincipal():
     p2_2.img2_9 = ImageTk.PhotoImage(img2_9, master=p2_2)
     button2_9 = tk.Button(p2_2, text="MODE", image=p2_2.img2_9,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: rellenarDatosModa())
+                          border=0, command=lambda: v.selectCamposDC(df, 'moda'))
     button2_9.grid(padx=10, pady=5, row=5, column=2)
     Hovertip(button2_9, hover_delay=500,
              text="Cleaning data using statistical method Mode")
@@ -188,7 +188,7 @@ def abrirMenuPrincipal():
     p2_2.img2_10 = ImageTk.PhotoImage(img2_10, master=p2_2)
     button2_10 = tk.Button(p2_2, text="RANGE", image=p2_2.img2_10,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: rellenarDatosRango())
+                          border=0, command=lambda: v.selectCamposDC(df, 'rango'))
     button2_10.grid(padx=10, pady=5, row=5, column=3)
     Hovertip(button2_10, hover_delay=500,
              text="Cleaning data using statistical method Range")
@@ -371,6 +371,11 @@ def buscarArchivo():
     extraerDatos()
 
     insertarDatosTreeView()
+
+def dataCleaning(df):
+    limpiarDatos()
+    insertarDatosTreeView()
+    verificarDatosNulos()
 
 def insertarDatosTreeView():
     # Llenamos el widget con nuestros datos

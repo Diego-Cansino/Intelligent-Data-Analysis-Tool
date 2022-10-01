@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
+from tkinter import messagebox as MessageBox
 import warnings
 import pandas as pd
 from idlelib.tooltip import Hovertip
@@ -7,8 +8,11 @@ from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from tkinter import messagebox as MessageBox
 from sklearn.exceptions import DataConversionWarning
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def solicitarDatosPrueba(df, campos, objetivos, model):
 
@@ -136,6 +140,7 @@ def extraerDatos():
 def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
 
     warnings.filterwarnings(action='ignore', category=DataConversionWarning)
+    warnings.filterwarnings(action='ignore', category=FutureWarning)
 
     x_train, x_test, y_train, y_test = train_test_split(datosEntrada, datosObjetivo,
                                                     test_size = 0.10,
@@ -158,8 +163,18 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
     global listaResultado
     listaResultado = list(prediction)
 
+    
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
     MessageBox.showinfo("Success!", f'The accuracy of the model is: {(modelAccuracy*100):.2f}%')
+
+    #PLOT CONFUSION MATRIX
+    plot_confusion_matrix(modelClassifier, x_test, y_test)
+    plt.show()
+
+    #SHOW REPORT
+    classificationReport = classification_report(y_test, y_pred, output_dict=True)
+    sns.heatmap(pd.DataFrame(classificationReport).T, annot=True)
+    plt.show()
