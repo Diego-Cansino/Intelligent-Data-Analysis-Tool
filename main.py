@@ -4,7 +4,7 @@ import time
 from ventanaPrincipal import abrirMenuPrincipal
 from ttkthemes import ThemedTk
 
-def play_gif():    
+def play_gif():
     img = Image.open("./Bd01.gif")
     lbl = Label(gui)
     lbl.place(x=150, y=50)

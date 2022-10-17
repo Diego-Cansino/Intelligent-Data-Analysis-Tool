@@ -8,6 +8,7 @@ import ventanaGraphs as gh
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
+from webbrowser import open
 
 def abrirMenuPrincipal():
     # inicializamos la GUI
@@ -45,24 +46,34 @@ def abrirMenuPrincipal():
     e_comprension = ttk.Label(p1, text="DATA UNDERSTANDING", font=('Helvetica', 15, 'bold'))
     e_comprension.grid(pady=5, row=0, column=0, columnspan=2)
 
-    img1_1 = Image.open('./img/searchFile.png')
+    img1_1 = Image.open('./img/documento.png')
     img1_1 = img1_1.resize((100,100))
     p1.img1_1 = ImageTk.PhotoImage(img1_1, master=p1)
-    button1_1 = tk.Button(p1, text="Search file", image=p1.img1_1, 
+    button1_1 = tk.Button(p1, text="Business Understanding", image=p1.img1_1,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: buscarArchivo())
+                          border=0, command=lambda: descargarComprension())
     button1_1.grid(padx=10, pady=5, row=1, column=0)
     Hovertip(button1_1, hover_delay=500,
              text="Search txt, xlsx or csv files")
 
-    img1_2 = Image.open('./img/plotting.png')
-    img1_2 = img1_2.resize((100, 100))
+    img1_2 = Image.open('./img/searchFile.png')
+    img1_2 = img1_2.resize((100,100))
     p1.img1_2 = ImageTk.PhotoImage(img1_2, master=p1)
-    button1_2 = tk.Button(p1, text="Graphing data", image=p1.img1_2,
+    button1_2 = tk.Button(p1, text="Search file", image=p1.img1_2, 
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: gh.abrirGraficos(df))
+                          border=0, command=lambda: buscarArchivo())
     button1_2.grid(padx=10, pady=5, row=1, column=1)
     Hovertip(button1_2, hover_delay=500,
+             text="Search txt, xlsx or csv files")
+
+    img1_3 = Image.open('./img/plotting.png')
+    img1_3 = img1_3.resize((100, 100))
+    p1.img1_3 = ImageTk.PhotoImage(img1_3, master=p1)
+    button1_3 = tk.Button(p1, text="Graphing data", image=p1.img1_3,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: gh.abrirGraficos(df))
+    button1_3.grid(padx=10, pady=5, row=1, column=2)
+    Hovertip(button1_3, hover_delay=500,
              text="Open a window with options for plotting")
 
     # Elementos Pestaña 2
@@ -357,6 +368,13 @@ def extraerDatos():
         tk.messagebox.showerror(
             "Information", f"File was not found in the path {rutaArchivo}")
         df = []
+
+
+def descargarComprension():
+    """Esta función descarga un archivo .word con el formato
+       para la fase de comprensión del negocio"""
+    link = 'https://docs.google.com/document/d/1cZz-OM-xpXeIiBX3RLh0m8zHprMz4DXbEbuhe74X5C0/edit?usp=sharing'
+    open(link, new=1)
 
 def buscarArchivo():
     """Esta funcion abre el explorador de archivos para que se busque un archivo"""
