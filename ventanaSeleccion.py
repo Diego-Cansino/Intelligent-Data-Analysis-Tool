@@ -147,4 +147,12 @@ def selectModel(model):
         SelectModel = models.getKNN()
     elif model == "lr":
         SelectModel = models.getLogisticRegression()
+    elif model == "ann_regression":
+        SelectModel = models.getANNRegression()
+    elif model == "dt_regression":
+        SelectModel = models.getDecisionTreeRegression()
+    elif model == "knn_regression":
+        SelectModel = models.getKNNRegression()
+    elif model == "lr_regression":
+        SelectModel = models.getLinearRegression()
     return SelectModel

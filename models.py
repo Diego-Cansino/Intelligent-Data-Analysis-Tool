@@ -1,7 +1,9 @@
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.neural_network import MLPClassifier, MLPRegressor
+
+# classification models #
 
 def getDecisionTree():
     return DecisionTreeClassifier(max_depth=3, min_samples_leaf=5, criterion='entropy', min_samples_split=5,
@@ -15,3 +17,17 @@ def getLogisticRegression():
 
 def getANN():
     return MLPClassifier(hidden_layer_sizes=(10,15), activation='logistic', solver='adam', max_iter=500, random_state=1)
+
+# regression models #
+
+def getDecisionTreeRegression():
+    return DecisionTreeRegressor(random_state=0)
+
+def getKNNRegression():
+    return KNeighborsRegressor(8)
+
+def getLinearRegression():
+    return LinearRegression()
+
+def getANNRegression():
+    return MLPRegressor(random_state=1, max_iter=500)
