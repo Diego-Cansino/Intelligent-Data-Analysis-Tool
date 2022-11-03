@@ -261,6 +261,10 @@ def abrirMenuPrincipal():
     ## TECNICAS DE MODELADO
     e_modelado = ttk.Label(p3, text="MODELING", font=('Helvetica', 15, 'bold'))
     e_modelado.grid(pady=5, row=0, column=0, columnspan=4)
+    ### MODELADO CLASIFICACION
+    e_clasificacion = ttk.Label(
+        p3, text="CLASSIFICATION MODELS", font=('Helvetica', 12, 'bold'))
+    e_clasificacion.grid(pady=5, row=1, column=0, columnspan=4)
 
     img3_1 = Image.open('./img/redNeuronal.png')
     img3_1 = img3_1.resize((90,90))
@@ -268,7 +272,7 @@ def abrirMenuPrincipal():
     button3_1 = tk.Button(p3, text="Artificial Neural Network", image=p3.img3_1,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "ann"))
-    button3_1.grid(padx=10, pady=5, row=1, column=0)
+    button3_1.grid(padx=10, pady=5, row=2, column=0)
     Hovertip(button3_1, hover_delay=500,
              text="Model: Sequential Artificial Neural Network model by Keras.")
 
@@ -278,7 +282,7 @@ def abrirMenuPrincipal():
     button3_2 = tk.Button(p3, text="Logistic Regression", image=p3.img3_2,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "lr"))
-    button3_2.grid(padx=10, pady=5, row=1, column=1)
+    button3_2.grid(padx=10, pady=5, row=2, column=1)
     Hovertip(button3_2, hover_delay=500,
              text="Model: Logistic regression classifier")
 
@@ -288,7 +292,7 @@ def abrirMenuPrincipal():
     button3_3 = tk.Button(p3, text="Decision tree", image=p3.img3_3,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "dt"))
-    button3_3.grid(padx=10, pady=5, row=1, column=2)
+    button3_3.grid(padx=10, pady=5, row=2, column=2)
     Hovertip(button3_3, hover_delay=500,
              text="Model: Decision tree classifier.")
 
@@ -298,14 +302,59 @@ def abrirMenuPrincipal():
     button3_4 = tk.Button(p3, text="KNN", image=p3.img3_4,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "knn"))
-    button3_4.grid(padx=10, pady=5, row=1, column=3)
+    button3_4.grid(padx=10, pady=5, row=2, column=3)
     Hovertip(button3_4, hover_delay=500,
+             text="Model: Classifier implementing the k-nearest neighbors vote.")
+
+    ### MODELADO REGRESION
+    e_clasificacion = ttk.Label(
+        p3, text="REGRESSION MODELS", font=('Helvetica', 12, 'bold'))
+    e_clasificacion.grid(pady=5, row=3, column=0, columnspan=4)
+
+    img3_5 = Image.open('./img/redNeuronal.png')
+    img3_5 = img3_5.resize((90,90))
+    p3.img3_5 = ImageTk.PhotoImage(img3_5, master=p3)
+    button3_5 = tk.Button(p3, text="Artificial Neural Network", image=p3.img3_5,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: v.abrirModelos(df, "ann_regression"))
+    button3_5.grid(padx=10, pady=5, row=4, column=0)
+    Hovertip(button3_5, hover_delay=500,
+             text="Model: Sequential Artificial Neural Network model by Keras.")
+
+    img3_6 = Image.open('./img/regresion.png')
+    img3_6 = img3_6.resize((90, 90))
+    p3.img3_6 = ImageTk.PhotoImage(img3_6, master=p3)
+    button3_6 = tk.Button(p3, text="Logistic Regression", image=p3.img3_6,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: v.abrirModelos(df, "lr_regression"))
+    button3_6.grid(padx=10, pady=5, row=4, column=1)
+    Hovertip(button3_6, hover_delay=500,
+             text="Model: Logistic regression classifier")
+
+    img3_7 = Image.open('./img/arbol.png')
+    img3_7 = img3_7.resize((90, 90))
+    p3.img3_7 = ImageTk.PhotoImage(img3_7, master=p3)
+    button3_7 = tk.Button(p3, text="Decision tree", image=p3.img3_7,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: v.abrirModelos(df, "dt_regression"))
+    button3_7.grid(padx=10, pady=5, row=4, column=2)
+    Hovertip(button3_7, hover_delay=500,
+             text="Model: Decision tree classifier.")
+
+    img3_8 = Image.open('./img/vecinos.png')
+    img3_8 = img3_8.resize((90, 90))
+    p3.img3_8 = ImageTk.PhotoImage(img3_8, master=p3)
+    button3_8 = tk.Button(p3, text="KNN", image=p3.img3_8,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: v.abrirModelos(df, "knn_regression"))
+    button3_8.grid(padx=10, pady=5, row=4, column=3)
+    Hovertip(button3_8, hover_delay=500,
              text="Model: Classifier implementing the k-nearest neighbors vote.")
     
     # Agregamos las pestañas creadas
-    notebook.add(p1, text='Understanding')
-    notebook.add(p2, text='Preparation')
-    notebook.add(p3, text='Modeling')
+    notebook.add(p1, text='Data Understanding')
+    notebook.add(p2, text='Data Preparation')
+    notebook.add(p3, text='Data Modeling')
 
     # Barra de Menús
     barraMenu = tk.Menu(gui)
