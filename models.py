@@ -1,7 +1,9 @@
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression, BayesianRidge
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.neural_network import MLPClassifier, MLPRegressor
+from sklearn.svm import SVC, SVR
+from sklearn.naive_bayes import GaussianNB
 
 # classification models #
 
@@ -18,6 +20,12 @@ def getLogisticRegression():
 def getANN():
     return MLPClassifier(hidden_layer_sizes=(10,15), activation='logistic', solver='adam', max_iter=500, random_state=1)
 
+def getSVM_Classifier():
+    return SVC()
+
+def getNaiveBayes():
+    return GaussianNB()
+
 # regression models #
 
 def getDecisionTreeRegression():
@@ -31,3 +39,9 @@ def getLinearRegression():
 
 def getANNRegression():
     return MLPRegressor(random_state=1, max_iter=500)
+
+def getSVMRegression():
+    return SVR()
+
+def getBayesianRidge():
+    return BayesianRidge()

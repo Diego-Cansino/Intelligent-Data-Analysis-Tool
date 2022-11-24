@@ -145,6 +145,8 @@ def selectModel(model):
         SelectModel = models.getDecisionTree()
     elif model == "knn":
         SelectModel = models.getKNN()
+    elif model == "nb":
+        SelectModel = models.getNaiveBayes()
     elif model == "lr":
         SelectModel = models.getLogisticRegression()
     elif model == "ann_regression":
@@ -155,4 +157,6 @@ def selectModel(model):
         SelectModel = models.getKNNRegression()
     elif model == "lr_regression":
         SelectModel = models.getLinearRegression()
+    elif model == "br":
+        SelectModel = models.getBayesianRidge()
     return SelectModel
