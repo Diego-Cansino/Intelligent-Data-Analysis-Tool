@@ -147,6 +147,8 @@ def selectModel(model):
         SelectModel = models.getKNN()
     elif model == "nb":
         SelectModel = models.getNaiveBayes()
+    elif model == "svm_c":
+        SelectModel = models.getSVMClassifier()
     elif model == "lr":
         SelectModel = models.getLogisticRegression()
     elif model == "ann_regression":
@@ -157,6 +159,8 @@ def selectModel(model):
         SelectModel = models.getKNNRegression()
     elif model == "lr_regression":
         SelectModel = models.getLinearRegression()
+    elif model == "svm_r":
+        SelectModel = models.getSVMRegression()
     elif model == "br":
         SelectModel = models.getBayesianRidge()
     return SelectModel
