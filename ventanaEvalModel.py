@@ -7,10 +7,8 @@ from idlelib.tooltip import Hovertip
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, plot_confusion_matrix, classification_report
 from sklearn.exceptions import DataConversionWarning
-from sklearn.metrics import plot_confusion_matrix
-from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -40,7 +38,7 @@ def solicitarDatosPrueba(df, campos, objetivos, model):
     boton1 = tk.Button(archivo2, text="Search file", image=gui2.img1,
                        activebackground="#5ECEF4", compound="top",
                        border=0, command=lambda: buscarArchivo())
-    boton1.grid(padx=10, pady=5, row=2, column=0)
+    boton1.grid(padx=10, pady=5, row=4, column=0)
     Hovertip(boton1, hover_delay=500,
             text="Search xlsx or csv files")
 
@@ -50,7 +48,7 @@ def solicitarDatosPrueba(df, campos, objetivos, model):
     boton2 = tk.Button(archivo2, text="Make prediction", image=gui2.img2,
                        activebackground="#5ECEF4", compound="top",
                        border=0, command=lambda: CargarDatosPrediccion(datosEntrada, datosObjetivo, model))
-    boton2.grid(padx=10, pady=5, row=2, column=2)
+    boton2.grid(padx=10, pady=5, row=4, column=2)
     Hovertip(boton2, hover_delay=500,
             text="Makes a prediction based on the selected model and evaluation data")
 
@@ -58,6 +56,18 @@ def solicitarDatosPrueba(df, campos, objetivos, model):
     global nombreArchivo2
     nombreArchivo2 = ttk.Label(archivo2, text="No selected File")
     nombreArchivo2.grid(pady=5, row=0, column=0, columnspan=3)
+
+    global accuracy_str
+    accuracy_str = ttk.Label(archivo2, text="")
+    accuracy_str.grid(pady=5, padx=0, row=1, column=0, columnspan=3)
+
+    global precision_str
+    precision_str = ttk.Label(archivo2, text="")
+    precision_str.grid(pady=5, padx=0, row=2, column=0, columnspan=3)
+
+    global recall_str
+    recall_str = ttk.Label(archivo2, text="")
+    recall_str.grid(pady=5, padx=0, row=3, column=0, columnspan=3)
 
     # Treeview Widget
     global tv2
@@ -155,7 +165,9 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
     y_pred = modelClassifier.predict(x_test)
 
     # Hacemos la prueba de efectividad
-    modelAccuracy = accuracy_score(y_pred, y_test)
+    modelAccuracy = accuracy_score(y_test, y_pred)
+    modelPrecision = precision_score(y_test, y_pred)
+    modelRecall = recall_score(y_test, y_pred)
 
     # Hacemos la predicción
     prediction = modelClassifier.predict(df2)
@@ -168,6 +180,11 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
     limpiarDatos()
 
     insertarDatosDePrediccion()
+
+    accuracy_str["text"] = str(f'Model Accuracy: how often is the classifier correct? {(modelAccuracy*100):.2f}%')
+    precision_str["text"] = str(f'Model Precision: what percentage of positive tuples are labeled as such? {(modelPrecision*100):.2f}%')
+    recall_str["text"] = str(f'Model Recall: what percentage of positive tuples are labelled as such? {(modelRecall*100):.2f}%')
+
     MessageBox.showinfo("Success!", f'The accuracy of the model is: {(modelAccuracy*100):.2f}%')
 
     #PLOT CONFUSION MATRIX

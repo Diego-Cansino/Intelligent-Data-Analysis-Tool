@@ -21,7 +21,7 @@ def getANN():
     return MLPClassifier(hidden_layer_sizes=(10,15), activation='logistic', solver='adam', max_iter=500, random_state=1)
 
 def getSVMClassifier():
-    return SVC()
+    return SVC(kernel='linear')
 
 def getNaiveBayes():
     return GaussianNB()

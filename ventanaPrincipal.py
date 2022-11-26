@@ -257,19 +257,36 @@ def abrirMenuPrincipal():
             text="Data format")
 
     # Elementos Pestaña 3
-   
     ## TECNICAS DE MODELADO
-    e_modelado = ttk.Label(p3, text="MODELING", font=('Helvetica', 15, 'bold'))
+    canvas_3 = tk.Canvas(p3, border=0)
+    canvas_3.pack(side=LEFT, fill="both", expand="yes")
+
+    yscroll = tk.Scrollbar(p3, orient="vertical",
+                           command=canvas_3.yview, border=0)
+    yscroll.pack(side=RIGHT, fill="y")
+
+    canvas_3.configure(yscrollcommand=yscroll.set)
+
+    canvas_3.bind('<Configure>', lambda e: canvas_3.configure(
+        scrollregion=canvas_3.bbox('all')))
+
+    p3_2 = tk.Frame(canvas_3, border=0)
+    p3_2.bind('<MouseWheel>', lambda e: canvas_3.yview_scroll(
+        int(-1*(e.delta/120)), "units"))
+    canvas_3.create_window((0, 0), window=p3_2, anchor="nw", width=(
+        canvas_3.winfo_width()-yscroll.winfo_width()))
+
+    e_modelado = ttk.Label(p3_2, text="MODELING", font=('Helvetica', 15, 'bold'))
     e_modelado.grid(pady=5, row=0, column=0, columnspan=4)
+    
     ### MODELADO CLASIFICACION
-    e_clasificacion = ttk.Label(
-        p3, text="CLASSIFICATION MODELS", font=('Helvetica', 12, 'bold'))
+    e_clasificacion = ttk.Label(p3_2, text="CLASSIFICATION MODELS", font=('Helvetica', 12, 'bold'))
     e_clasificacion.grid(pady=5, row=1, column=0, columnspan=4)
 
     img3_1 = Image.open('./img/redNeuronal.png')
-    img3_1 = img3_1.resize((90,90))
-    p3.img3_1 = ImageTk.PhotoImage(img3_1, master=p3)
-    button3_1 = tk.Button(p3, text="Artificial Neural Network", image=p3.img3_1,
+    img3_1 = img3_1.resize((60, 60))
+    p3_2.img3_1 = ImageTk.PhotoImage(img3_1, master=p3_2)
+    button3_1 = tk.Button(p3_2, text="Artificial Neural Network", image=p3_2.img3_1,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "ann"))
     button3_1.grid(padx=10, pady=5, row=2, column=0)
@@ -277,9 +294,9 @@ def abrirMenuPrincipal():
              text="Model: Classifier Artificial Neural Network.")
 
     img3_2 = Image.open('./img/regresion.png')
-    img3_2 = img3_2.resize((90, 90))
-    p3.img3_2 = ImageTk.PhotoImage(img3_2, master=p3)
-    button3_2 = tk.Button(p3, text="Logistic Regression", image=p3.img3_2,
+    img3_2 = img3_2.resize((60, 60))
+    p3_2.img3_2 = ImageTk.PhotoImage(img3_2, master=p3_2)
+    button3_2 = tk.Button(p3_2, text="Logistic Regression", image=p3_2.img3_2,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "lr"))
     button3_2.grid(padx=10, pady=5, row=2, column=1)
@@ -287,9 +304,9 @@ def abrirMenuPrincipal():
              text="Model: Logistic regression classifier")
 
     img3_3 = Image.open('./img/arbol.png')
-    img3_3 = img3_3.resize((90, 90))
-    p3.img3_3 = ImageTk.PhotoImage(img3_3, master=p3)
-    button3_3 = tk.Button(p3, text="Decision tree", image=p3.img3_3,
+    img3_3 = img3_3.resize((60, 60))
+    p3_2.img3_3 = ImageTk.PhotoImage(img3_3, master=p3_2)
+    button3_3 = tk.Button(p3_2, text="Decision tree", image=p3_2.img3_3,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "dt"))
     button3_3.grid(padx=10, pady=5, row=2, column=2)
@@ -297,59 +314,98 @@ def abrirMenuPrincipal():
              text="Model: Decision tree classifier.")
 
     img3_4 = Image.open('./img/vecinos.png')
-    img3_4 = img3_4.resize((90, 90))
-    p3.img3_4 = ImageTk.PhotoImage(img3_4, master=p3)
-    button3_4 = tk.Button(p3, text="KNN", image=p3.img3_4,
+    img3_4 = img3_4.resize((60, 60))
+    p3_2.img3_4 = ImageTk.PhotoImage(img3_4, master=p3_2)
+    button3_4 = tk.Button(p3_2, text="KNN", image=p3_2.img3_4,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "knn"))
     button3_4.grid(padx=10, pady=5, row=2, column=3)
     Hovertip(button3_4, hover_delay=500,
              text="Model: Classifier implementing the k-nearest neighbors vote.")
 
+    img3_5 = Image.open('./img/GaussClas.png')
+    img3_5 = img3_5.resize((60, 60))
+    p3_2.img3_5 = ImageTk.PhotoImage(img3_5, master=p3_2)
+    button3_5 = tk.Button(p3_2, text="Gaussian Naive Bayes", image=p3_2.img3_5,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: v.abrirModelos(df, "nb"))
+    button3_5.grid(padx=10, pady=5, row=3, column=0)
+    Hovertip(button3_5, hover_delay=500,
+             text="Model: Gaussian Naive Bayes")
+
+    img3_6 = Image.open('./img/SVM1.png')
+    img3_6 = img3_6.resize((60, 60))
+    p3_2.img3_6 = ImageTk.PhotoImage(img3_6, master=p3_2)
+    button3_6 = tk.Button(p3_2, text="SVM CLASSIFIER", image=p3_2.img3_6,
+                          activebackground="#5ECEF4", compound="top",
+                          border=0, command=lambda: v.abrirModelos(df, "svm_c"))
+    button3_6.grid(padx=10, pady=5, row=3, column=1)
+    Hovertip(button3_6, hover_delay=500, text="Model: SVM CLASSIFIER")
+
     ### MODELADO REGRESION
     e_clasificacion = ttk.Label(
-        p3, text="REGRESSION MODELS", font=('Helvetica', 12, 'bold'))
-    e_clasificacion.grid(pady=5, row=3, column=0, columnspan=4)
+        p3_2, text="REGRESSION MODELS", font=('Helvetica', 12, 'bold'))
+    e_clasificacion.grid(pady=5, row=4, column=0, columnspan=4)
 
-    img3_5 = Image.open('./img/redNeuronalReg.png')
-    img3_5 = img3_5.resize((90,90))
-    p3.img3_5 = ImageTk.PhotoImage(img3_5, master=p3)
-    button3_5 = tk.Button(p3, text="Artificial Neural Network", image=p3.img3_5,
+    img3_7 = Image.open('./img/redNeuronalReg.png')
+    img3_7 = img3_7.resize((60, 60))
+    p3_2.img3_7 = ImageTk.PhotoImage(img3_7, master=p3_2)
+    button3_7 = tk.Button(p3_2, text="Artificial Neural Network", image=p3_2.img3_7,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "ann_regression"))
-    button3_5.grid(padx=10, pady=5, row=4, column=0)
-    Hovertip(button3_5, hover_delay=500,
+    button3_7.grid(padx=10, pady=5, row=5, column=0)
+    Hovertip(button3_7, hover_delay=500,
              text="Model: Regressor Artificial Neural Network.")
 
-    img3_6 = Image.open('./img/regresionReg.png')
-    img3_6 = img3_6.resize((90, 90))
-    p3.img3_6 = ImageTk.PhotoImage(img3_6, master=p3)
-    button3_6 = tk.Button(p3, text="Logistic Regression", image=p3.img3_6,
+    img3_8 = Image.open('./img/regresionReg.png')
+    img3_8 = img3_8.resize((60, 60))
+    p3_2.img3_8 = ImageTk.PhotoImage(img3_8, master=p3_2)
+    button3_8 = tk.Button(p3_2, text="Logistic Regression", image=p3_2.img3_8,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "lr_regression"))
-    button3_6.grid(padx=10, pady=5, row=4, column=1)
-    Hovertip(button3_6, hover_delay=500,
+    button3_8.grid(padx=10, pady=5, row=5, column=1)
+    Hovertip(button3_8, hover_delay=500,
              text="Model: Linear regression")
 
-    img3_7 = Image.open('./img/arbolReg.png')
-    img3_7 = img3_7.resize((90, 90))
-    p3.img3_7 = ImageTk.PhotoImage(img3_7, master=p3)
-    button3_7 = tk.Button(p3, text="Decision tree", image=p3.img3_7,
+    img3_9 = Image.open('./img/arbolReg.png')
+    img3_9 = img3_9.resize((60, 60))
+    p3_2.img3_9 = ImageTk.PhotoImage(img3_9, master=p3_2)
+    button3_9 = tk.Button(p3_2, text="Decision tree", image=p3_2.img3_9,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "dt_regression"))
-    button3_7.grid(padx=10, pady=5, row=4, column=2)
-    Hovertip(button3_7, hover_delay=500,
+    button3_9.grid(padx=10, pady=5, row=5, column=2)
+    Hovertip(button3_9, hover_delay=500,
              text="Model: Decision tree Regressor.")
 
-    img3_8 = Image.open('./img/vecinosReg.png')
-    img3_8 = img3_8.resize((90, 90))
-    p3.img3_8 = ImageTk.PhotoImage(img3_8, master=p3)
-    button3_8 = tk.Button(p3, text="KNN", image=p3.img3_8,
+    img3_10 = Image.open('./img/vecinosReg.png')
+    img3_10 = img3_10.resize((60, 60))
+    p3_2.img3_10 = ImageTk.PhotoImage(img3_10, master=p3_2)
+    button3_10 = tk.Button(p3_2, text="KNN", image=p3_2.img3_10,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "knn_regression"))
-    button3_8.grid(padx=10, pady=5, row=4, column=3)
-    Hovertip(button3_8, hover_delay=500,
+    button3_10.grid(padx=10, pady=5, row=5, column=3)
+    Hovertip(button3_10, hover_delay=500,
              text="Model: Regressor implementing the k-nearest neighbors vote.")
+
+    img3_11 = Image.open('./img/BayesReg.png')
+    img3_11 = img3_11.resize((60, 60))
+    p3_2.img3_11 = ImageTk.PhotoImage(img3_11, master=p3_2)
+    button3_11 = tk.Button(p3_2, text="Bayesian Ridge", image=p3_2.img3_11,
+                          activebackground="#5ECEF4", compound="top",
+                           border=0, command=lambda: v.abrirModelos(df, "br"))
+    button3_11.grid(padx=10, pady=5, row=6, column=0)
+    Hovertip(button3_11, hover_delay=500,
+             text="Model: Bayesian Ridge")
+
+    img3_12 = Image.open('./img/SVM2.png')
+    img3_12 = img3_12.resize((60, 60))
+    p3_2.img3_12 = ImageTk.PhotoImage(img3_12, master=p3_2)
+    button3_12 = tk.Button(p3_2, text="SVM REGRESSION", image=p3_2.img3_12,
+                          activebackground="#5ECEF4", compound="top",
+                           border=0, command=lambda: v.abrirModelos(df, "svm_r"))
+    button3_12.grid(padx=10, pady=5, row=6, column=1)
+    Hovertip(button3_12, hover_delay=500,
+             text="Model: SVM REGRESSION")
     
     # Agregamos las pestañas creadas
     notebook.add(p1, text='Data Understanding')
