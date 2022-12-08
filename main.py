@@ -10,14 +10,12 @@ def play_gif():
     lbl.place(x=150, y=50)
 
     for img in ImageSequence.Iterator(img):
-        
         img = img.resize((376,500))
         img = ImageTk.PhotoImage(img)
         lbl.config(image = img)
         gui.update()
-        time.sleep(0.06)
+        time.sleep(0.10)
 
-    # gui.after(0,play_gif)
     return img
 
 def change():
@@ -27,7 +25,6 @@ def change():
 
 
 gui = ThemedTk(theme="adapta")
-
 # Configuramos la gui
 gui.title("Intelligent Data Analysis Tool")
 gui.geometry("650x650")
@@ -37,12 +34,13 @@ titulo = Label(text='Intelligent Data Analysis Tool')
 titulo.pack()
 titulo.config(font=('Helvatical bold',20), pady=10)
 
-
-botonPrincipal = Button(text="Go to main", command= change)
+img = Image.open('./img/home.png')
+img = img.resize((20, 20))
+gui.img = ImageTk.PhotoImage(img, master=gui)
+botonPrincipal = Button(image=gui.img, text="Go to main", compound="top",
+                        activebackground="#5ECEF4", command=change, state="disable")
 botonPrincipal.pack(side=BOTTOM, pady=20)
 
-# lambda: [abrirMenuPrincipal(), gui.destroy()]
-
 a = play_gif()
-
+botonPrincipal.configure(state="normal")
 gui.mainloop()

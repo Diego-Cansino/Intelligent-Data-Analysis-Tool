@@ -50,13 +50,19 @@ def diagramaAreas(valoresX, valoresY, etiquetaX, etiquetaY):
 def histograma(datos, etiqueta):
     fig, ax = plot.subplots()
     fig.suptitle("Histogram " + etiqueta)
-    ax.hist(datos, np.arange(min(datos), max(datos) + 1))
+    # , np.arange(min(datos), max(datos) + 1)
+    ax.hist(datos)
     plot.xlabel(etiqueta)
     plot.show()
 
 
-def diagramaSectores(datos):
+def diagramaSectores(datos, etiqueta):
+    datos = datos.tolist()
+    toDict = dict(zip(datos, map(lambda x: datos.count(x), datos)))
+    etiquetas = toDict.keys()
+    valores = toDict.values()
+
     fig, ax = plot.subplots()
-    fig.suptitle("Pie Chart")
-    ax.pie(datos, labels=datos, autopct='%1.1f%%')
+    fig.suptitle("Pie Chart " + etiqueta)
+    ax.pie(valores, labels=etiquetas, autopct='%1.1f%%')
     plot.show()

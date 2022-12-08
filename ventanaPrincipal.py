@@ -5,10 +5,12 @@ import tkinter as tk
 import pandas as pd
 import ventanaSeleccion as v
 import ventanaGraphs as gh
+import ventanaDataSelection as vds
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
 from webbrowser import open
+import ventanaFormat as form
 
 def abrirMenuPrincipal():
     # inicializamos la GUI
@@ -18,12 +20,15 @@ def abrirMenuPrincipal():
     gui.geometry("750x750")
     gui.title("Intelligent Data Analysis Tool")
 
+    # Elemento para redimensionar los LabelFrame
+    pw = tk.PanedWindow(gui, orient="vertical")
+
     # Frame para el TreeView
-    ventana = tk.LabelFrame(gui, text="txt, xlsx and csv files")
+    ventana = tk.LabelFrame(pw, text="txt, xlsx and csv files")
     ventana.pack(fill="both", expand=True)
 
     # Frame para el dialogo del archivo abierto
-    archivo = tk.LabelFrame(gui)
+    archivo = tk.LabelFrame(pw)
     archivo.pack(side="bottom", fill="both", expand=False)
 
     # Ruta del archivo
@@ -41,10 +46,9 @@ def abrirMenuPrincipal():
     p3 = ttk.Frame(notebook)
     
     # Elementos Pestaña 1
-
     ## COMPRENSION DE LOS DATOS
     e_comprension = ttk.Label(p1, text="DATA UNDERSTANDING", font=('Helvetica', 15, 'bold'))
-    e_comprension.grid(pady=5, row=0, column=0, columnspan=2)
+    e_comprension.grid(pady=5, row=0, column=0, columnspan=3)
 
     img1_1 = Image.open('./img/documento.png')
     img1_1 = img1_1.resize((100,100))
@@ -52,7 +56,7 @@ def abrirMenuPrincipal():
     button1_1 = tk.Button(p1, text="Business Understanding", image=p1.img1_1,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: descargarComprension())
-    button1_1.grid(padx=10, pady=5, row=1, column=0)
+    button1_1.grid(padx=10, pady=5, row=1, column=0, sticky="nsew")
     Hovertip(button1_1, hover_delay=500,
              text="Search txt, xlsx or csv files")
 
@@ -62,7 +66,7 @@ def abrirMenuPrincipal():
     button1_2 = tk.Button(p1, text="Search file", image=p1.img1_2, 
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: buscarArchivo())
-    button1_2.grid(padx=10, pady=5, row=1, column=1)
+    button1_2.grid(padx=10, pady=5, row=1, column=1, sticky="nsew")
     Hovertip(button1_2, hover_delay=500,
              text="Search txt, xlsx or csv files")
 
@@ -71,14 +75,18 @@ def abrirMenuPrincipal():
     p1.img1_3 = ImageTk.PhotoImage(img1_3, master=p1)
     button1_3 = tk.Button(p1, text="Graphing data", image=p1.img1_3,
                           activebackground="#5ECEF4", compound="top",
-                          border=0, command=lambda: gh.abrirGraficos(df))
-    button1_3.grid(padx=10, pady=5, row=1, column=2)
+                          border=0, command=lambda: verificarDf())
+    button1_3.grid(padx=10, pady=5, row=1, column=2, sticky="nsew")
     Hovertip(button1_3, hover_delay=500,
              text="Open a window with options for plotting")
 
+    p1.columnconfigure(0, weight=1)
+    p1.columnconfigure(1, weight=1)
+    p1.columnconfigure(2, weight=1)
+
     # Elementos Pestaña 2
-    canvas = tk.Canvas(p2, border=0)
-    canvas.pack(side=LEFT, fill="both", expand="yes")
+    canvas = tk.Canvas(p2, border=0, background="white")
+    canvas.pack(side=LEFT, fill="both", expand=1)
 
     yscroll = tk.Scrollbar(p2, orient="vertical", command=canvas.yview, border=0)
     yscroll.pack(side=RIGHT, fill="y")
@@ -88,31 +96,31 @@ def abrirMenuPrincipal():
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox('all')))
 
 
-    p2_2 = tk.Frame(canvas, border=0)
+    p2_2 = tk.Frame(canvas, border=0, background="white")
     p2_2.bind('<MouseWheel>', lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
-    canvas.create_window((0, 0), window=p2_2, anchor="nw", width=(canvas.winfo_width()-yscroll.winfo_width()))
-   
+    canvas.create_window((0, 0), window=p2_2, anchor="ne", width=(canvas.winfo_width()-yscroll.winfo_width()))
+    
     ## PREPARACIÓN DE LOS DATOS
     e_preparacion = ttk.Label(p2_2, text="DATA PREPARATION", font=('Helvetica', 15, 'bold'))
-    e_preparacion.grid(pady=5, row=0, column=0, columnspan=4)
+    e_preparacion.grid(pady=5, row=0, column=0, columnspan=5)
     
     ### SELECCION DE DATOS
     e_seleccion = ttk.Label(p2_2, text="DATA SELECTION", font=('Helvetica', 12, 'bold'))
-    e_seleccion.grid(pady=5, row=1, column=0)
+    e_seleccion.grid(pady=5, row=1, column=0, columnspan=5, sticky="nsw")
 
     img2_1 = Image.open('./img/seleccionDatos.png')
     img2_1 = img2_1.resize((60, 60))
     p2_2.img2_1 = ImageTk.PhotoImage(img2_1, master=p2_2)
     button2_1 = tk.Button(p2_2, text="Data Selection", image=p2_2.img2_1,
                           activebackground="#5ECEF4", compound="top",
-                          border=0) #, command=lambda: )
-    button2_1.grid(padx=10, pady=5, row=2, column=0)
+                          border=0, command=lambda: vds.abrirDataSelection(df))
+    button2_1.grid(padx=10, pady=5, row=2, column=0, sticky="nsew")
     Hovertip(button2_1, hover_delay=500,
              text="Data Selection")
     
     ### LIMPIEZA DE DATOS
     e_limpieza = ttk.Label(p2_2, text="DATA CLEANING", font=('Helvetica', 12, 'bold'))
-    e_limpieza.grid(pady=5, row=3, column=0)
+    e_limpieza.grid(pady=5, row=3, column=0, columnspan=5, sticky="nsw")
 
     img2_2 = Image.open('./img/FFILL.png')
     img2_2 = img2_2.resize((60,60))
@@ -120,7 +128,7 @@ def abrirMenuPrincipal():
     button2_2 = tk.Button(p2_2, text="FFILL", image=p2_2.img2_2,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'FFILL'))
-    button2_2.grid(padx=10, pady=5, row=4, column=0)
+    button2_2.grid(padx=10, pady=5, row=4, column=0, sticky="nsew")
     Hovertip(button2_2, hover_delay=500,
              text="Cleaning data using functionality FFILL: Any missing value is filled based on the corresponding value in the previous row.")
 
@@ -130,7 +138,7 @@ def abrirMenuPrincipal():
     button2_3 = tk.Button(p2_2, text="BFILL", image=p2_2.img2_3,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'BFILL'))
-    button2_3.grid(padx=10, pady=5, row=4, column=1)
+    button2_3.grid(padx=10, pady=5, row=4, column=1, sticky="nsew")
     Hovertip(button2_3, hover_delay=500,
              text="Cleaning data using functionality BFILL: Is used to backward fill the missing values in the dataset.")
 
@@ -140,7 +148,7 @@ def abrirMenuPrincipal():
     button2_4 = tk.Button(p2_2, text="None", image=p2_2.img2_4,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: limpiarDatosColumnaVacia())
-    button2_4.grid(padx=10, pady=5, row=4, column=2)
+    button2_4.grid(padx=10, pady=5, row=4, column=2, sticky="nsew")
     Hovertip(button2_4, hover_delay=500,
              text="Cleaning data using functionality None: Filters the values of a dataset to leave only those that are non-null.")
 
@@ -150,7 +158,7 @@ def abrirMenuPrincipal():
     button2_5 = tk.Button(p2_2, text="ALL", image=p2_2.img2_5,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: limpiarDatosAllMethods())
-    button2_5.grid(padx=10, pady=5, row=4, column=3)
+    button2_5.grid(padx=10, pady=5, row=4, column=3, sticky="nsew")
     Hovertip(button2_5, hover_delay=500,
              text="Cleaning data using functionality ALL: Makes a combination of FFILL, BFILL and None functionalities")
 
@@ -160,7 +168,7 @@ def abrirMenuPrincipal():
     button2_6 = tk.Button(p2_2, text="standardize data", image=p2_2.img2_6,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'norma'))
-    button2_6.grid(padx=10, pady=5, row=4, column=4)
+    button2_6.grid(padx=10, pady=5, row=4, column=4, sticky="nsew")
     Hovertip(button2_6, hover_delay=500,
              text="standardize atypical data")
 
@@ -170,7 +178,7 @@ def abrirMenuPrincipal():
     button2_7 = tk.Button(p2_2, text="MEAN", image=p2_2.img2_7,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'media'))
-    button2_7.grid(padx=10, pady=5, row=5, column=0)
+    button2_7.grid(padx=10, pady=5, row=5, column=0, sticky="nsew")
     Hovertip(button2_7, hover_delay=500,
              text="Cleaning data using statistical method Mean")
 
@@ -180,7 +188,7 @@ def abrirMenuPrincipal():
     button2_8 = tk.Button(p2_2, text="MEDIAN", image=p2_2.img2_8,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'mediana'))
-    button2_8.grid(padx=10, pady=5, row=5, column=1)
+    button2_8.grid(padx=10, pady=5, row=5, column=1, sticky="nsew")
     Hovertip(button2_8, hover_delay=500,
              text="Cleaning data using statistical method Median")
 
@@ -190,7 +198,7 @@ def abrirMenuPrincipal():
     button2_9 = tk.Button(p2_2, text="MODE", image=p2_2.img2_9,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'moda'))
-    button2_9.grid(padx=10, pady=5, row=5, column=2)
+    button2_9.grid(padx=10, pady=5, row=5, column=2, sticky="nsew")
     Hovertip(button2_9, hover_delay=500,
              text="Cleaning data using statistical method Mode")
 
@@ -200,7 +208,7 @@ def abrirMenuPrincipal():
     button2_10 = tk.Button(p2_2, text="RANGE", image=p2_2.img2_10,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.selectCamposDC(df, 'rango'))
-    button2_10.grid(padx=10, pady=5, row=5, column=3)
+    button2_10.grid(padx=10, pady=5, row=5, column=3, sticky="nsew")
     Hovertip(button2_10, hover_delay=500,
              text="Cleaning data using statistical method Range")
 
@@ -210,13 +218,13 @@ def abrirMenuPrincipal():
     button2_11 = tk.Button(p2_2, text="remove atypical data", image=p2_2.img2_11,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: eliminarDatosAtipicos())
-    button2_11.grid(padx=10, pady=5, row=5, column=4)
+    button2_11.grid(padx=10, pady=5, row=5, column=4, sticky="nsew")
     Hovertip(button2_11, hover_delay=500,
              text="remove atypical data")
 
     ### CONSTRUCCION DE NUEVOS DATOS 
-    e_nuevosDatos = ttk.Label(p2_2, text="CONSTRUCTION OF\n NEW DATA", font=('Helvetica', 12, 'bold'))
-    e_nuevosDatos.grid(pady=5, row=6, column=0)
+    e_nuevosDatos = ttk.Label(p2_2, text="CONSTRUCTION OF NEW DATA", font=('Helvetica', 12, 'bold'))
+    e_nuevosDatos.grid(pady=5, row=6, column=0, columnspan=5, sticky="nsw")
 
     img2_12 = Image.open('./img/nuevosDatos.png')
     img2_12 = img2_12.resize((60, 60))
@@ -224,13 +232,13 @@ def abrirMenuPrincipal():
     button2_12 = tk.Button(p2_2, text="New data", image=p2_2.img2_12,
                            activebackground="#5ECEF4", compound="top",
                         border=0) #, command=lambda: rellenarDatosRango())
-    button2_12.grid(padx=10, pady=5, row=7, column=0)
+    button2_12.grid(padx=10, pady=5, row=7, column=0, sticky="nsew")
     Hovertip(button2_12, hover_delay=500,
             text="Construction of new data")
 
     ### INTEGRACION DE DATOS
     e_integracion = ttk.Label(p2_2, text="DATA INTEGRATION", font=('Helvetica', 12, 'bold'))
-    e_integracion.grid(pady=5, row=8, column=0)
+    e_integracion.grid(pady=5, row=8, column=0, columnspan=5, sticky="nsw")
 
     img2_13 = Image.open('./img/integracion.png')
     img2_13 = img2_13.resize((60, 60))
@@ -238,27 +246,33 @@ def abrirMenuPrincipal():
     button2_13 = tk.Button(p2_2, text="Data integration", image=p2_2.img2_13,
                            activebackground="#5ECEF4", compound="top",
                         border=0) #, command=lambda: rellenarDatosRango())
-    button2_13.grid(padx=10, pady=5, row=9, column=0)
+    button2_13.grid(padx=10, pady=5, row=9, column=0, sticky="nsew")
     Hovertip(button2_13, hover_delay=500,
             text="Data integration")
 
     ### FORMATO DE DATOS
     e_formato = ttk.Label(p2_2, text="DATA FORMAT", font=('Helvetica', 12, 'bold'))
-    e_formato.grid(pady=5, row=10, column=0)
+    e_formato.grid(pady=5, row=10, column=0, columnspan=5, sticky="nsw")
 
     img2_14 = Image.open('./img/formato.png')
     img2_14 = img2_14.resize((60, 60))
     p2_2.img2_14 = ImageTk.PhotoImage(img2_14, master=p2_2)
     button2_14 = tk.Button(p2_2, text="Data format", image=p2_2.img2_14,
                            activebackground="#5ECEF4", compound="top",
-                           border=0) #, command=lambda: rellenarDatosRango())
-    button2_14.grid(padx=10, pady=5, row=11, column=0)
+                           border=0, command=lambda: form.abrirSeleccion(df))
+    button2_14.grid(padx=10, pady=5, row=11, column=0, sticky="nsew")
     Hovertip(button2_14, hover_delay=500,
             text="Data format")
 
+    p2_2.columnconfigure(0, weight=1)
+    p2_2.columnconfigure(1, weight=1)
+    p2_2.columnconfigure(2, weight=1)
+    p2_2.columnconfigure(3, weight=1)
+    p2_2.columnconfigure(4, weight=1)
+
     # Elementos Pestaña 3
     ## TECNICAS DE MODELADO
-    canvas_3 = tk.Canvas(p3, border=0)
+    canvas_3 = tk.Canvas(p3, border=0, background="white")
     canvas_3.pack(side=LEFT, fill="both", expand="yes")
 
     yscroll = tk.Scrollbar(p3, orient="vertical",
@@ -270,13 +284,13 @@ def abrirMenuPrincipal():
     canvas_3.bind('<Configure>', lambda e: canvas_3.configure(
         scrollregion=canvas_3.bbox('all')))
 
-    p3_2 = tk.Frame(canvas_3, border=0)
+    p3_2 = tk.Frame(canvas_3, border=0, background="white")
     p3_2.bind('<MouseWheel>', lambda e: canvas_3.yview_scroll(
         int(-1*(e.delta/120)), "units"))
     canvas_3.create_window((0, 0), window=p3_2, anchor="nw", width=(
         canvas_3.winfo_width()-yscroll.winfo_width()))
 
-    e_modelado = ttk.Label(p3_2, text="MODELING", font=('Helvetica', 15, 'bold'))
+    e_modelado = ttk.Label(p3_2, text="DATA MODELING", font=('Helvetica', 15, 'bold'))
     e_modelado.grid(pady=5, row=0, column=0, columnspan=4)
     
     ### MODELADO CLASIFICACION
@@ -286,7 +300,7 @@ def abrirMenuPrincipal():
     img3_1 = Image.open('./img/redNeuronal.png')
     img3_1 = img3_1.resize((60, 60))
     p3_2.img3_1 = ImageTk.PhotoImage(img3_1, master=p3_2)
-    button3_1 = tk.Button(p3_2, text="Artificial Neural Network", image=p3_2.img3_1,
+    button3_1 = tk.Button(p3_2, text="MLP Neural Network", image=p3_2.img3_1,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "ann"))
     button3_1.grid(padx=10, pady=5, row=2, column=0)
@@ -316,7 +330,7 @@ def abrirMenuPrincipal():
     img3_4 = Image.open('./img/vecinos.png')
     img3_4 = img3_4.resize((60, 60))
     p3_2.img3_4 = ImageTk.PhotoImage(img3_4, master=p3_2)
-    button3_4 = tk.Button(p3_2, text="KNN", image=p3_2.img3_4,
+    button3_4 = tk.Button(p3_2, text="K-Nearest Neighbors\n(K-NN)", image=p3_2.img3_4,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "knn"))
     button3_4.grid(padx=10, pady=5, row=2, column=3)
@@ -336,7 +350,7 @@ def abrirMenuPrincipal():
     img3_6 = Image.open('./img/SVM1.png')
     img3_6 = img3_6.resize((60, 60))
     p3_2.img3_6 = ImageTk.PhotoImage(img3_6, master=p3_2)
-    button3_6 = tk.Button(p3_2, text="SVM CLASSIFIER", image=p3_2.img3_6,
+    button3_6 = tk.Button(p3_2, text="Support Vector Machine\n(SVM) Classifier", image=p3_2.img3_6,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "svm_c"))
     button3_6.grid(padx=10, pady=5, row=3, column=1)
@@ -350,7 +364,7 @@ def abrirMenuPrincipal():
     img3_7 = Image.open('./img/redNeuronalReg.png')
     img3_7 = img3_7.resize((60, 60))
     p3_2.img3_7 = ImageTk.PhotoImage(img3_7, master=p3_2)
-    button3_7 = tk.Button(p3_2, text="Artificial Neural Network", image=p3_2.img3_7,
+    button3_7 = tk.Button(p3_2, text="MLP Neural Network", image=p3_2.img3_7,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "ann_regression"))
     button3_7.grid(padx=10, pady=5, row=5, column=0)
@@ -360,7 +374,7 @@ def abrirMenuPrincipal():
     img3_8 = Image.open('./img/regresionReg.png')
     img3_8 = img3_8.resize((60, 60))
     p3_2.img3_8 = ImageTk.PhotoImage(img3_8, master=p3_2)
-    button3_8 = tk.Button(p3_2, text="Logistic Regression", image=p3_2.img3_8,
+    button3_8 = tk.Button(p3_2, text="Linear Regression", image=p3_2.img3_8,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "lr_regression"))
     button3_8.grid(padx=10, pady=5, row=5, column=1)
@@ -380,7 +394,7 @@ def abrirMenuPrincipal():
     img3_10 = Image.open('./img/vecinosReg.png')
     img3_10 = img3_10.resize((60, 60))
     p3_2.img3_10 = ImageTk.PhotoImage(img3_10, master=p3_2)
-    button3_10 = tk.Button(p3_2, text="KNN", image=p3_2.img3_10,
+    button3_10 = tk.Button(p3_2, text="K-Nearest Neighbors\n(K-NN)", image=p3_2.img3_10,
                           activebackground="#5ECEF4", compound="top",
                           border=0, command=lambda: v.abrirModelos(df, "knn_regression"))
     button3_10.grid(padx=10, pady=5, row=5, column=3)
@@ -400,7 +414,7 @@ def abrirMenuPrincipal():
     img3_12 = Image.open('./img/SVM2.png')
     img3_12 = img3_12.resize((60, 60))
     p3_2.img3_12 = ImageTk.PhotoImage(img3_12, master=p3_2)
-    button3_12 = tk.Button(p3_2, text="SVM REGRESSION", image=p3_2.img3_12,
+    button3_12 = tk.Button(p3_2, text="Support Vector Machine\n(SVM) Regression", image=p3_2.img3_12,
                           activebackground="#5ECEF4", compound="top",
                            border=0, command=lambda: v.abrirModelos(df, "svm_r"))
     button3_12.grid(padx=10, pady=5, row=6, column=1)
@@ -411,6 +425,11 @@ def abrirMenuPrincipal():
     notebook.add(p1, text='Data Understanding')
     notebook.add(p2, text='Data Preparation')
     notebook.add(p3, text='Data Modeling')
+
+    # Agregamos los LabelFrame al PanedWindow
+    pw.add(ventana, height=450)
+    pw.add(archivo, height=300)
+    pw.pack(fill="both", expand=True)
 
     # Barra de Menús
     barraMenu = tk.Menu(gui)
@@ -457,6 +476,7 @@ def extraerDatos():
     """ Esta funcion extrae los datos del archivo seleccionado """
     rutaArchivo = nombreArchivo["text"]
     global df
+    df = []
     try:
         archivoExcel = r"{}".format(rutaArchivo)
         if archivoExcel[-4:] == ".csv":
@@ -645,6 +665,13 @@ def guardarComoDataframeExcel():
     file = filedialog.asksaveasfilename(filetypes=[(
         "xlsx files", ".xlsx")], defaultextension="*.xlsx")
     df.to_excel(file, index=False, header=True)
+
+def verificarDf():
+    global df
+    if ('df' in globals()):
+        gh.abrirGraficos(df)
+    else: 
+        MessageBox.showerror("Error", "Load a file")
 
 def abrirHelp():
     app = ThemedTk(theme="adapta")
