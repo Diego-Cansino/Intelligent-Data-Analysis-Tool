@@ -6,6 +6,7 @@ import pandas as pd
 import ventanaSeleccion as v
 import ventanaGraphs as gh
 import ventanaDataSelection as vds
+import ventanaIntegration as vdi
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
@@ -245,7 +246,7 @@ def abrirMenuPrincipal():
     p2_2.img2_13 = ImageTk.PhotoImage(img2_13, master=p2_2)
     button2_13 = tk.Button(p2_2, text="Data integration", image=p2_2.img2_13,
                            activebackground="#5ECEF4", compound="top",
-                        border=0) #, command=lambda: rellenarDatosRango())
+                           border=0, command=lambda: vdi.abrirDataIntegration(df))
     button2_13.grid(padx=10, pady=5, row=9, column=0, sticky="nsew")
     Hovertip(button2_13, hover_delay=500,
             text="Data integration")
