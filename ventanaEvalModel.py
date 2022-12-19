@@ -204,11 +204,8 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
 
         # Cambiamos las metricas
         metric_one["text"] = str(f'Model Accuracy: {(modelAccuracy*100):.2f}%')
-        #metric_one["tooltip"] = str('How often is the classifier correct?')
         metric_two["text"] = str(f'Model Precision: {(modelPrecision*100):.2f}%')
-        #metric_two["tooltip"] = str('What percentage of positive tuples are labeled as such?')
         metric_three["text"] = str(f'Model Recall: {(modelRecall*100):.2f}%')
-        #metric_three["tooltip"] = str('What percentage of positive tuples are labelled as such?')
         
         #PLOT CONFUSION MATRIX
         plot_confusion_matrix(generated_model, x_test, y_test)
@@ -227,11 +224,8 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
 
         # Actualizamos el valor de las metricas
         metric_one["text"] = str(f'MAE: {(mae*100):.2f}%')
-        #metric_one["tooltip"] = str('Mean absolute error regression loss.')
-        metric_two["text"] = str(f'MSE: {(mse*100):.2f}')
-        #metric_two["tooltip"] = str('Mean squared error regression loss.')
-        metric_three["text"] = str(f'R^2: {(r2*100):.2f}')
-        #metric_three["tooltip"] = str('(coefficient of determination) regression score function.')
+        metric_two["text"] = str(f'MSE: {(mse*100):.2f}%')
+        metric_three["text"] = str(f'R^2: {(r2*100):.2f}%')
 
         # Create a dataframe with the evaluation metrics
         metrics_df = pd.DataFrame({'MAE': mae, 'MSE': mse, 'R^2': r2}, index=[0])
