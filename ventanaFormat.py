@@ -1,6 +1,6 @@
 import tkinter as tk
 from ttkthemes import ThemedTk
-import ventanaPrincipal as vp
+from tkinter import filedialog
 
 def abrirSeleccion(df):
     
@@ -52,7 +52,7 @@ def abrirSeleccion(df):
                         font=('Helvetica', 12, 'bold'))
     label6.grid( pady=5, row=3, column=2)
 
-    listaDatos = ['object', 'int64', 'float64', 'bool', 'datetime64' ,'timedelta[ns]', 'category']
+    listaDatos = ['str', 'int64', 'float64', 'bool', 'datetime64' ,'timedelta[ns]', 'category']
 
     # # Declaramos las opciones
     lista3 = tk.ttk.Combobox(app, state="readonly", values=listaDatos)
@@ -60,13 +60,15 @@ def abrirSeleccion(df):
 
     def changeDato( df, columna, change ):
         df = df.astype({f'{columna}': change})
-        vp.dataCleaning(df)
+        guardarAleatorio( df )
 
-    boton2 = tk.Button(app, text="Change type of data", background="#5ECEF4", command=lambda: changeDato(df, lista2.get(), lista3.get()))
+    boton2 = tk.Button(app, text="Change type of data", background="#5ECEF4", command=lambda: changeDato(df2, lista2.get(), lista3.get()))
     boton2.grid(pady=5, row=4, column=0, columnspan=4, sticky="ew")
 
 def changeInfo(event=None):
     label3["text"] = str(df2[lista.get()].dtype)
     lista2.current(lista.current())
 
-
+def guardarAleatorio(df):
+    file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+    df.to_excel(file, index=False, header=True)

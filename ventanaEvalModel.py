@@ -7,7 +7,7 @@ from idlelib.tooltip import Hovertip
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, plot_confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, plot_confusion_matrix, classification_report, mean_absolute_error, mean_squared_error, r2_score
 from sklearn.exceptions import DataConversionWarning
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -57,17 +57,17 @@ def solicitarDatosPrueba(df, campos, objetivos, model):
     nombreArchivo2 = ttk.Label(archivo2, text="No selected File")
     nombreArchivo2.grid(pady=5, row=0, column=0, columnspan=3)
 
-    global accuracy_str
-    accuracy_str = ttk.Label(archivo2, text="")
-    accuracy_str.grid(pady=5, padx=0, row=1, column=0, columnspan=3)
+    global metric_one
+    metric_one = ttk.Label(archivo2, text="")
+    metric_one.grid(pady=5, padx=0, row=1, column=0, sticky='w')
 
-    global precision_str
-    precision_str = ttk.Label(archivo2, text="")
-    precision_str.grid(pady=5, padx=0, row=2, column=0, columnspan=3)
+    global metric_two
+    metric_two = ttk.Label(archivo2, text="")
+    metric_two.grid(pady=5, padx=0, row=2, column=0, sticky='w')
 
-    global recall_str
-    recall_str = ttk.Label(archivo2, text="")
-    recall_str.grid(pady=5, padx=0, row=3, column=0, columnspan=3)
+    global metric_three
+    metric_three = ttk.Label(archivo2, text="")
+    metric_three.grid(pady=5, padx=0, row=3, column=0, sticky='w')
 
     # Treeview Widget
     global tv2
@@ -152,25 +152,33 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
     warnings.filterwarnings(action='ignore', category=DataConversionWarning)
     warnings.filterwarnings(action='ignore', category=FutureWarning)
 
-    x_train, x_test, y_train, y_test = train_test_split(datosEntrada, datosObjetivo,
+    try:
+        x_train, x_test, y_train, y_test = train_test_split(datosEntrada, datosObjetivo,
                                                     test_size = 0.10,
                                                     shuffle = True,
                                                     random_state = 1)
 
-    # Arbol de decision
-    modelClassifier = model
+        # Model
+        generated_model = model
+        
+        generated_model.fit(x_train, y_train)
+    except:
+        # Create a message box with a message and a title 
+        messagebox = "Trained model", "An error occurred while training the model. Check if the required configuration is correct."
+        
+        # Close the message box after 5 seconds
+        close_messagebox(messagebox)
+        return None
     
-    modelClassifier.fit(x_train, y_train)
+    # Create a message box with a message and a title 
+    messagebox = "The model has been successfully trained! Close the window to continue."
+    # Close the message box after 5 seconds
+    close_messagebox(messagebox)
 
-    y_pred = modelClassifier.predict(x_test)
-
-    # Hacemos la prueba de efectividad
-    modelAccuracy = accuracy_score(y_test, y_pred)
-    modelPrecision = precision_score(y_test, y_pred)
-    modelRecall = recall_score(y_test, y_pred)
+    y_pred = generated_model.predict(x_test)
 
     # Hacemos la predicción
-    prediction = modelClassifier.predict(df2)
+    prediction = generated_model.predict(df2)
 
     global listaResultado
     listaResultado = list(prediction)
@@ -181,17 +189,70 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
 
     insertarDatosDePrediccion()
 
-    accuracy_str["text"] = str(f'Model Accuracy: how often is the classifier correct? {(modelAccuracy*100):.2f}%')
-    precision_str["text"] = str(f'Model Precision: what percentage of positive tuples are labeled as such? {(modelPrecision*100):.2f}%')
-    recall_str["text"] = str(f'Model Recall: what percentage of positive tuples are labelled as such? {(modelRecall*100):.2f}%')
+    messagebox_two = 'When you close this window, you will be able to see the metrics obtained from the generated model.' 
+    # Close the message box after 5 seconds
+    close_messagebox(messagebox_two)
 
-    MessageBox.showinfo("Success!", f'The accuracy of the model is: {(modelAccuracy*100):.2f}%')
+    model_type = generated_model.__class__.__name__
+    print(model_type)
 
-    #PLOT CONFUSION MATRIX
-    plot_confusion_matrix(modelClassifier, x_test, y_test)
+    if 'Classifier' in model_type or 'LogisticRegression' == model_type or 'SVC' == model_type or 'GaussianNB' == model_type:
+        # Hacemos la prueba de efectividad
+        modelAccuracy = accuracy_score(y_test, y_pred)
+        modelPrecision = precision_score(y_test, y_pred)
+        modelRecall = recall_score(y_test, y_pred)
+
+        # Cambiamos las metricas
+        metric_one["text"] = str(f'Model Accuracy: {(modelAccuracy*100):.2f}%')
+        #metric_one["tooltip"] = str('How often is the classifier correct?')
+        metric_two["text"] = str(f'Model Precision: {(modelPrecision*100):.2f}%')
+        #metric_two["tooltip"] = str('What percentage of positive tuples are labeled as such?')
+        metric_three["text"] = str(f'Model Recall: {(modelRecall*100):.2f}%')
+        #metric_three["tooltip"] = str('What percentage of positive tuples are labelled as such?')
+        
+        #PLOT CONFUSION MATRIX
+        plot_confusion_matrix(generated_model, x_test, y_test)
+        plt.show()
+
+        model_type = generated_model.__class__.__name__
+
+        #SHOW REPORT
+        classificationReport = classification_report(y_test, y_pred, output_dict=True)
+        sns.heatmap(pd.DataFrame(classificationReport).T, annot=True)
+    else:
+        # Calculate the evaluation metrics
+        mae = mean_absolute_error(y_test, y_pred)
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+
+        # Actualizamos el valor de las metricas
+        metric_one["text"] = str(f'MAE: {(mae*100):.2f}%')
+        #metric_one["tooltip"] = str('Mean absolute error regression loss.')
+        metric_two["text"] = str(f'MSE: {(mse*100):.2f}')
+        #metric_two["tooltip"] = str('Mean squared error regression loss.')
+        metric_three["text"] = str(f'R^2: {(r2*100):.2f}')
+        #metric_three["tooltip"] = str('(coefficient of determination) regression score function.')
+
+        # Create a dataframe with the evaluation metrics
+        metrics_df = pd.DataFrame({'MAE': mae, 'MSE': mse, 'R^2': r2}, index=[0])
+
+        # Create a figure and axis
+        fig, ax = plt.subplots()
+
+        # Plot the evaluation metrics
+        sns.lineplot(data=metrics_df, ax=ax)
+
+        # Set the axis labels and title
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Metric value')
+        ax.set_title('Evaluation metrics for linear regression model')
     plt.show()
 
-    #SHOW REPORT
-    classificationReport = classification_report(y_test, y_pred, output_dict=True)
-    sns.heatmap(pd.DataFrame(classificationReport).T, annot=True)
-    plt.show()
+def close_messagebox(message, timeout=5000):
+    root = tk.Tk()
+    root.withdraw()
+    try:
+        root.after(timeout, root.destroy)
+        tk.messagebox.showinfo('Model generated', message, master=root)
+    except:
+        pass
