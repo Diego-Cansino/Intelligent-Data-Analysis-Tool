@@ -47,8 +47,11 @@ def integrarCampos(df):
         if(verificarRepetidos(df)):
             dfR = df.join(df2)
             tk.messagebox.showinfo("Success!", "Ready to save data integration")
-            file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-            dfR.to_excel(file, index=False, header=True)
+            try:
+                file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+                dfR.to_excel(file, index=False, header=True)
+            except ValueError:
+                tk.messagebox.showerror("Error", "Unsaved data")
         else: 
             tk.messagebox.showerror("Error", "Repeated fields names")
     else:
@@ -61,22 +64,21 @@ def integrarRegistros(df):
         if(verificarRepetidos(df)):
             dfR = pd.concat([df, df2], sort=False)
             tk.messagebox.showinfo("Success!", "Ready to save data integration")
-            file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-            dfR.to_excel(file, index=False, header=True)
+            try:
+                file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+                dfR.to_excel(file, index=False, header=True)
+            except ValueError:
+                tk.messagebox.showerror("Error", "Unsaved data")
         else: 
-            tk.messagebox.showerror("Error", "Different field names")
+            tk.messagebox.showerror(
+                "Error", "Different field names or\nDifferent order in field names")
     else: 
-        tk.messagebox.showerror("Error", f"The number of fields is not equal\nExpected fields: {cols[0]}")
+        tk.messagebox.showerror("Error", f"The number of fields is not equal\nExpected fields: {cols[1]}")
 
 def verificarRepetidos(df):
     listaCampos = df.columns.tolist()
     listaCampos2 = df2.columns.tolist()
-    repetido = True
-    for campo in listaCampos:
-        for campo2 in listaCampos2:
-            if (campo == campo2):
-                repetido = False
-    return repetido
+    return (listaCampos == listaCampos2)
 
 def extraerDatos(archivo):
     """ Esta funcion extrae los datos del archivo seleccionado """

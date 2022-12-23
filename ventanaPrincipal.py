@@ -657,15 +657,21 @@ def verificarDatosNulos():
 
 def guardarDataframeExcel():
     global df
-    desktopPath = str(Path.home() / "Desktop")
-    desktop = desktopPath + '/exportDataTool.xlsx'
-    df.to_excel(desktop, index = False, header=True)
+    try:
+        desktopPath = str(Path.home() / "Desktop")
+        desktop = desktopPath + '/exportDataTool.xlsx'
+        df.to_excel(desktop, index = False, header=True)
+    except ValueError:
+        tk.messagebox.showerror("Error", "Unsaved data")
 
 def guardarComoDataframeExcel():
     global df
-    file = filedialog.asksaveasfilename(filetypes=[(
-        "xlsx files", ".xlsx")], defaultextension="*.xlsx")
-    df.to_excel(file, index=False, header=True)
+    try:
+        file = filedialog.asksaveasfilename(filetypes=[(
+            "xlsx files", ".xlsx")], defaultextension="*.xlsx")
+        df.to_excel(file, index=False, header=True)
+    except ValueError:
+        tk.messagebox.showerror("Error", "Unsaved data")
 
 def verificarDf():
     global df

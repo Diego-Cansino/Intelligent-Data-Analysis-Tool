@@ -144,8 +144,11 @@ def guardarAleatorio(df):
     if(porcentaje.get() != ""):
         n = float(porcentaje.get())/100
         df = df.sample(frac=n)
-        file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-        df.to_excel(file, index=False, header=True)
+        try:
+            file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+            df.to_excel(file, index=False, header=True)
+        except ValueError:
+            tk.messagebox.showerror("Error", "Unsaved data")
     else:
         messagebox.showerror("Error", "Select a percentage")
 
@@ -161,8 +164,11 @@ def guardarRango(df):
         a = int(valDe.get())-1
         b = int(valHasta.get())
         df = df.iloc[range(a, b),:]
-        file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-        df.to_excel(file, index=False, header=True)
+        try:
+            file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+            df.to_excel(file, index=False, header=True)
+        except ValueError:
+            tk.messagebox.showerror("Error", "Unsaved data")
 
     else: 
         messagebox.showerror("Error", f"Invalid range\nval min: 1, val max: {filas[0]}")

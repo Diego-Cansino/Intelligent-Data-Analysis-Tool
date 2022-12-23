@@ -70,5 +70,8 @@ def changeInfo(event=None):
     lista2.current(lista.current())
 
 def guardarAleatorio(df):
-    file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-    df.to_excel(file, index=False, header=True)
+    try:
+        file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+        df.to_excel(file, index=False, header=True)
+    except ValueError:
+        tk.messagebox.showerror("Error", "Unsaved data")
