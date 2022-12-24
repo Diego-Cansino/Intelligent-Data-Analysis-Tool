@@ -68,5 +68,8 @@ def abrirSelCamp(df):
 
 def guardarDatos(df):
     df = df.iloc[:, campos]
-    file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-    df.to_excel(file, index=False, header=True)
+    try:
+        file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
+        df.to_excel(file, index=False, header=True)
+    except ValueError:
+        tk.messagebox.showerror("Error", "Unsaved data")
