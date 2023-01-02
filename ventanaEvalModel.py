@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
-from tkinter import messagebox as MessageBox
 import warnings
 import pandas as pd
 from idlelib.tooltip import Hovertip
@@ -11,6 +10,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, plot_
 from sklearn.exceptions import DataConversionWarning
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 def solicitarDatosPrueba(df, campos, objetivos, model):
 
@@ -164,16 +164,11 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
         generated_model.fit(x_train, y_train)
     except:
         # Create a message box with a message and a title 
-        messagebox = "Trained model", "An error occurred while training the model. Check if the required configuration is correct."
-        
-        # Close the message box after 5 seconds
-        close_messagebox(messagebox)
+        tk.messagebox.showerror("Error", "Verify that the construction of the model is correct. Close the process and try again.")
         return None
     
     # Create a message box with a message and a title 
-    messagebox = "The model has been successfully trained! Close the window to continue."
-    # Close the message box after 5 seconds
-    close_messagebox(messagebox)
+    tk.messagebox.showinfo("Success!", "The model has been created successfully. Close the window to continue.")
 
     y_pred = generated_model.predict(x_test)
 
@@ -183,18 +178,15 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
     global listaResultado
     listaResultado = list(prediction)
 
-    
     # Funcion para eliminar todo del TreeView
     limpiarDatos()
 
     insertarDatosDePrediccion()
 
-    messagebox_two = 'When you close this window, you will be able to see the metrics obtained from the generated model.' 
-    # Close the message box after 5 seconds
-    close_messagebox(messagebox_two)
+    # Create a message box with a message and a title 
+    tk.messagebox.showinfo("Displays visual information", "When you close this window, you will be able to see the metrics obtained from the generated model.")
 
     model_type = generated_model.__class__.__name__
-    print(model_type)
 
     if 'Classifier' in model_type or 'LogisticRegression' == model_type or 'SVC' == model_type or 'GaussianNB' == model_type:
         # Hacemos la prueba de efectividad
@@ -227,26 +219,20 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
         metric_two["text"] = str(f'MSE: {(mse*100):.2f}%')
         metric_three["text"] = str(f'R^2: {(r2*100):.2f}%')
 
-        # Create a dataframe with the evaluation metrics
-        metrics_df = pd.DataFrame({'MAE': mae, 'MSE': mse, 'R^2': r2}, index=[0])
+        # create a dataframe with the values
+        df = pd.DataFrame({'metric': ['MAE', 'MSE', 'R^2'],
+                        'value': [mae, mse, r2]})
 
-        # Create a figure and axis
-        fig, ax = plt.subplots()
+        # plot the data
+        sns.barplot(x='metric', y='value', hue='metric', data=df)
 
-        # Plot the evaluation metrics
-        sns.lineplot(data=metrics_df, ax=ax)
+        # set the y-axis labels to percentages
+        plt.yticks(np.arange(0, 1.1, 0.1))
+        plt.ylabel('percent')
 
-        # Set the axis labels and title
-        ax.set_xlabel('Time')
-        ax.set_ylabel('Metric value')
+        # set the y-axis labels to include the % symbol
+        ax = plt.gca()
+        vals = ax.get_yticks()
+        ax.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
         ax.set_title('Evaluation metrics for linear regression model')
     plt.show()
-
-def close_messagebox(message, timeout=5000):
-    root = tk.Tk()
-    root.withdraw()
-    try:
-        root.after(timeout, root.destroy)
-        tk.messagebox.showinfo('Model generated', message, master=root)
-    except:
-        pass
