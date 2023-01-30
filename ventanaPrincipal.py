@@ -7,6 +7,7 @@ import ventanaSeleccion as v
 import ventanaGraphs as gh
 import ventanaDataSelection as vds
 import ventanaIntegration as vdi
+import ventanaNewData as nd
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
@@ -232,7 +233,7 @@ def abrirMenuPrincipal():
     p2_2.img2_12 = ImageTk.PhotoImage(img2_12, master=p2_2)
     button2_12 = tk.Button(p2_2, text="New data", image=p2_2.img2_12,
                            activebackground="#5ECEF4", compound="top",
-                        border=0) #, command=lambda: rellenarDatosRango())
+                        border=0, command=lambda: nd.newData(df))
     button2_12.grid(padx=10, pady=5, row=7, column=0, sticky="nsew")
     Hovertip(button2_12, hover_delay=500,
             text="Construction of new data")
