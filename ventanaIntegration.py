@@ -44,7 +44,7 @@ def integrarCampos(df):
     filas = df.shape
     filasDf2 = df2.shape
     if(filas[0] == filasDf2[0]):
-        if(verificarRepetidos(df)):
+        if(not verificarRepetidos(df)):
             dfR = df.join(df2)
             tk.messagebox.showinfo("Success!", "Ready to save data integration")
             try:
@@ -78,6 +78,7 @@ def integrarRegistros(df):
 def verificarRepetidos(df):
     listaCampos = df.columns.tolist()
     listaCampos2 = df2.columns.tolist()
+    print(listaCampos==listaCampos2)
     return (listaCampos == listaCampos2)
 
 def extraerDatos(archivo):
