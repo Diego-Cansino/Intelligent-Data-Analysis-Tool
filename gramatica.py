@@ -185,7 +185,7 @@ def p_expresion_binaria(t):
         
 def p_expresion_unaria(t):
     '''expresion : MENOS expresion %prec UMENOS
-                  | NOT expresion %prec NOT'''
+                 | NOT expresion %prec NOT'''
     if t[1] == '-'  : 
         if type(t[2]) == str: t[0] = -df[t[2]]
         else:
