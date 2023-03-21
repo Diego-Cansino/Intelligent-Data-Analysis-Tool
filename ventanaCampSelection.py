@@ -71,5 +71,6 @@ def guardarDatos(df):
     try:
         file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
         df.to_excel(file, index=False, header=True)
+        tk.messagebox.showinfo("Success!", "Saved data")
     except ValueError:
         tk.messagebox.showerror("Error", "Unsaved data")

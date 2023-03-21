@@ -147,8 +147,9 @@ def guardarAleatorio(df):
         try:
             file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
             df.to_excel(file, index=False, header=True)
+            messagebox.showinfo("Success!", "Saved data")
         except ValueError:
-            tk.messagebox.showerror("Error", "Unsaved data")
+            messagebox.showerror("Error", "Unsaved data")
     else:
         messagebox.showerror("Error", "Select a percentage")
 
@@ -167,8 +168,9 @@ def guardarRango(df):
         try:
             file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
             df.to_excel(file, index=False, header=True)
+            messagebox.showinfo("Success!", "Saved data")
         except ValueError:
-            tk.messagebox.showerror("Error", "Unsaved data")
+            messagebox.showerror("Error", "Unsaved data")
 
     else: 
         messagebox.showerror("Error", f"Invalid range\nval min: 1, val max: {filas[0]}")
