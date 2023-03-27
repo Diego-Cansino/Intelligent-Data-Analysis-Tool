@@ -1,5 +1,4 @@
 tokens  = (
-    'REVALUAR',
     'PARIZQ',
     'PARDER',
     'CORIZQ',
@@ -13,7 +12,6 @@ tokens  = (
     'NOT',
     'DECIMAL',
     'ENTERO',
-    'PTCOMA',
     'CADENA'
 )
 
