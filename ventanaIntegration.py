@@ -46,7 +46,7 @@ def integrarCampos(df):
     if(filas[0] == filasDf2[0]):
         if(not verificarRepetidos(df)):
             dfR = df.join(df2)
-            tk.messagebox.showinfo("Success!", "Ready to save data integration")
+            tk.messagebox.showinfo("Success!", "Saved data")
             try:
                 file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
                 dfR.to_excel(file, index=False, header=True)

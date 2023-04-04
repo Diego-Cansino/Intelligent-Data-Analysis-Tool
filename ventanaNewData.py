@@ -4,256 +4,234 @@ from PIL import Image, ImageTk
 import tkinter as tk
 from idlelib.tooltip import Hovertip
 from tkinter import filedialog
+import gramatica as nd
+
 
 def newData(df):
-    global opcion, result_name_entry, lOption, opciones1, opciones2, boton
-    try:
-        app = ThemedTk(theme="adapta")
-        app.geometry('650x520')
-        app.resizable(False, False)
-        app.title("Data Calculator")
-        app.columnconfigure(0, weight=1)
-        app.columnconfigure(1, weight=1)
-        app.columnconfigure(2, weight=1)
-        app.columnconfigure(3, weight=1)
+    global input, name, campo
+    app = ThemedTk(theme="adapta")
+    app.geometry('450x450')
+    app.resizable(False, False)
+    app.title("Data Calculator")
+    app.columnconfigure(0, weight=1)
+    app.columnconfigure(1, weight=1)
+    app.columnconfigure(2, weight=1)
+    app.columnconfigure(3, weight=1)
+    app.columnconfigure(4, weight=1)
+    app.columnconfigure(5, weight=1)
+    app.rowconfigure(0, weight=1)
+    app.rowconfigure(1, weight=1)
+    app.rowconfigure(2, weight=1)
+    app.rowconfigure(3, weight=1)
+    app.rowconfigure(4, weight=1)
+    app.rowconfigure(5, weight=1)
 
-        nuevosDatos = ttk.Label(app, text="NEW DATA", font=('Helveltica', 15, 'bold'))
-        nuevosDatos.grid(pady=5, row=0, column=0, columnspan=4)
+    nuevosDatos = ttk.Label(app, text="NEW DATA",
+                            font=('Helveltica', 15, 'bold'))
+    nuevosDatos.grid(pady=5, row=0, column=0, columnspan=6)
 
-        #Etiqueta opereciones aritmeticas 
-        label = ttk.Label(app, text="Arithmetic operations:", font=('Helvetica', 12, 'bold'))
-        label.grid(pady=5, row=1, column=0, columnspan=4, sticky="w")
+    input = tk.Text(app, state="disabled", height=3)
+    input.grid(pady=5, row=1, column=0, columnspan=6, sticky="nsew")
 
-        opcion = tk.IntVar()
-        ## suma
-        imgSum = Image.open('./img/suma.png')
-        imgSum = imgSum.resize((70,70))
-        app.imgSum = ImageTk.PhotoImage(imgSum, master=app)
-        buttonSum = tk.Radiobutton(app, image=app.imgSum, text='Sum', 
-                                   activebackground="#5ECEF4", border=0,
-                                   variable=opcion, value=0, compound="top",
-                                   command=desactivarOp1)
-        buttonSum.grid(padx=10, pady=5, row=2, column=0)
-        Hovertip(buttonSum, hover_delay=500, text="Sum")
-        
-        ## Resta
-        imgRes = Image.open('./img/resta.png')
-        imgRes = imgRes.resize((70, 70))
-        app.imgRes = ImageTk.PhotoImage(imgRes, master=app)
-        buttonRes = tk.Radiobutton(app, image=app.imgRes, text='Subtract', 
-                                   activebackground="#5ECEF4", border=0,
-                                   variable=opcion, value=1, compound="top",
-                                   command=desactivarOp1)
-        buttonRes.grid(padx=10, pady=5, row=2, column=1)
-        Hovertip(buttonRes, hover_delay=500, text="Subtract")
+    imgUno = Image.open('./img/uno.png')
+    imgUno = imgUno.resize((50, 50))
+    app.imgUno = ImageTk.PhotoImage(imgUno, master=app)
+    buttonUno = tk.Button(image=app.imgUno, command=lambda: verElemento("1"),
+                          activebackground="#5ECEF4")
+    buttonUno.grid(pady=5, row=2, column=0)
 
-        ## Multiplicación
-        imgMult = Image.open('./img/multi.png')
-        imgMult = imgMult.resize((70, 70))
-        app.imgMult = ImageTk.PhotoImage(imgMult, master=app)
-        buttonMult = tk.Radiobutton(app, image=app.imgMult, text='Multiplication',
-                                    activebackground="#5ECEF4", border=0,
-                                    variable=opcion, value=2, compound="top",
-                                    command=desactivarOp1)
-        buttonMult.grid(padx=10, pady=5, row=2, column=2)
-        Hovertip(buttonMult, hover_delay=500, text="Multiplication")
+    imgDos = Image.open('./img/dos.png')
+    imgDos = imgDos.resize((50, 50))
+    app.imgDos = ImageTk.PhotoImage(imgDos, master=app)
+    buttonDos = tk.Button(image=app.imgDos, command=lambda: verElemento("2"),
+                          activebackground="#5ECEF4")
+    buttonDos.grid(pady=5, row=2, column=1)
 
-        ## División
-        imgDiv = Image.open('./img/division.png')
-        imgDiv = imgDiv.resize((70, 70))
-        app.imgDiv = ImageTk.PhotoImage(imgDiv, master=app)
-        buttonDiv = tk.Radiobutton(app, image=app.imgDiv, text='Division', 
-                                   activebackground="#5ECEF4", border=0,
-                                   variable=opcion, value=3, compound="top",
-                                   command=desactivarOp1)
-        buttonDiv.grid(padx=10, pady=5, row=2, column=3)
-        Hovertip(buttonDiv, hover_delay=500, text="Division")
-
-        #Etiqueta opereciones logicas
-        label2 = ttk.Label(app, text="Logical operations:",
-                           font=('Helvetica', 12, 'bold'))
-        label2.grid(pady=5, row=3, column=0, columnspan=4, sticky="w")
-
-        ## and
-        imgAnd = Image.open('./img/and.png')
-        imgAnd = imgAnd.resize((70, 70))
-        app.imgAnd = ImageTk.PhotoImage(imgAnd, master=app)
-        buttonAnd = tk.Radiobutton(app, image=app.imgAnd, text='And', 
-                                   activebackground="#5ECEF4", border=0,
-                                   variable=opcion, value=4, compound="top",
-                                   command=desactivarOp1)
-        buttonAnd.grid(padx=10, pady=5, row=4, column=0)
-        Hovertip(buttonAnd, hover_delay=500, text="And")
-
-        ## or
-        imgOr = Image.open('./img/or.png')
-        imgOr = imgOr.resize((70, 70))
-        app.imgOr = ImageTk.PhotoImage(imgOr, master=app)
-        buttonOr = tk.Radiobutton(app, image=app.imgOr, text='Or', 
-                                  activebackground="#5ECEF4", border=0,
-                                  variable=opcion, value=5, compound="top",
-                                  command=desactivarOp1)
-        buttonOr.grid(padx=10, pady=5, row=4, column=1)
-        Hovertip(buttonOr, hover_delay=500, text="Or")
-
-        ## not
-        imgNot = Image.open('./img/not.png')
-        imgNot = imgNot.resize((70, 70))
-        app.imgNot = ImageTk.PhotoImage(imgNot, master=app)
-        buttonNot = tk.Radiobutton(app, image=app.imgNot, text='Not', 
-                                   activebackground="#5ECEF4", border=0,
-                                   variable=opcion, value=6, compound="top",
-                                   command=desactivarOp1)
-        buttonNot.grid(padx=10, pady=5, row=4, column=2)
-        Hovertip(buttonNot, hover_delay=500, text="Not")
-        
-        # Extraemos los datos
-        listaCampos = df.columns.tolist()
-        ## Declaramos las opciones
-        opciones1 = ttk.Combobox(app, state="readonly",
-                                values=listaCampos, postcommand=desactivarBoton)
-        opciones1.grid(pady=5, column=0, row=5)
-
-        lOption = ttk.Label(app,
-                            font=('Helvetica', 12, 'bold'))
-        lOption.grid(pady=5, row=5, column=1)
-
-        opciones2 = ttk.Combobox(app, state="readonly",
-                                values=listaCampos, postcommand=desactivarBoton)
-        opciones2.grid(pady=5, column=2, row=5)
-
-        # Etiqueta nombre nuevo campo
-        lname = ttk.Label(app, text="New field name: ",
-                          font=('Helvetica', 12, 'bold'))
-        lname.grid(pady=5, row=6, column=0)
-        result_name_entry = tk.Entry(app)
-        result_name_entry.grid(pady=5, row=6, column=1)
-
-        # Boton para guardar
-        imgGuardar = Image.open('./img/guardar.png')
-        imgGuardar = imgGuardar.resize((30, 30))
-        app.imgGuardar = ImageTk.PhotoImage(imgGuardar, master=app)
-        boton = tk.Button(image=app.imgGuardar, text="Save",
-                           compound="top", state="disable", command=lambda: save_data(df),
+    imgTres = Image.open('./img/tres.png')
+    imgTres = imgTres.resize((50, 50))
+    app.imgTres = ImageTk.PhotoImage(imgTres, master=app)
+    buttonTres = tk.Button(image=app.imgTres, command=lambda: verElemento("3"),
                            activebackground="#5ECEF4")
-        boton.grid(pady=5, row=7, column=0, columnspan=4)
+    buttonTres.grid(pady=5, row=2, column=2)
 
-        opciones1.bind("<<ComboboxSelected>>", desactivarBoton)
-        opciones2.bind("<<ComboboxSelected>>", desactivarBoton)
+    imgParIzq = Image.open('./img/parizq.png')
+    imgParIzq = imgParIzq.resize((50, 50))
+    app.imgParIzq = ImageTk.PhotoImage(imgParIzq, master=app)
+    buttonParIzq = tk.Button(image=app.imgParIzq, command=lambda: verElemento("("),
+                           activebackground="#5ECEF4")
+    buttonParIzq.grid(pady=5, row=2, column=3)
 
-        desactivarOp1()
-        desactivarBoton()
+    imgParDer = Image.open('./img/parder.png')
+    imgParDer = imgParDer.resize((50, 50))
+    app.imgParDer = ImageTk.PhotoImage(imgParDer, master=app)
+    buttonParDer = tk.Button(image=app.imgParDer, command=lambda: verElemento(")"),
+                           activebackground="#5ECEF4")
+    buttonParDer.grid(pady=5, row=2, column=4)
 
-    except Exception as e:
-        tk.messagebox.showerror(
-            "Error", e
-        )
-        return None
+    imgSum = Image.open('./img/suma.png')
+    imgSum = imgSum.resize((50, 50))
+    app.imgSum = ImageTk.PhotoImage(imgSum, master=app)
+    buttonSum = tk.Button(image=app.imgSum, command=lambda: verElemento("+"),
+                          activebackground="#5ECEF4")
+    buttonSum.grid(pady=5, row=2, column=5)
 
-def desactivarBoton(Event=None):
-    if (opcion.get() == 6 and opciones2.get() == ""):
-        boton.configure(state="disable")
-    elif (opcion.get() != 6 and (opciones1.get() == "" or opciones2.get() == "")):
-        boton.configure(state="disable")
-    else:
-        boton.configure(state="normal")
+    imgCuatro = Image.open('./img/cuatro.png')
+    imgCuatro = imgCuatro.resize((50, 50))
+    app.imgCuatro = ImageTk.PhotoImage(imgCuatro, master=app)
+    buttonCuatro = tk.Button(image=app.imgCuatro, command=lambda: verElemento("4"),
+                             activebackground="#5ECEF4")
+    buttonCuatro.grid(pady=5, row=3, column=0)
 
-def desactivarOp1():
-    labelOperacion()
-    opciones1.set("")
-    opciones2.set("")
-    if (opcion.get() == 6):
-        opciones2.configure(state="readonly")
-        opciones1.configure(state="disable")
-    else:
-        opciones1.configure(state="readonly")
-        opciones2.configure(state="readonly")
+    imgCinco = Image.open('./img/cinco.png')
+    imgCinco = imgCinco.resize((50, 50))
+    app.imgCinco = ImageTk.PhotoImage(imgCinco, master=app)
+    buttonCinco = tk.Button(image=app.imgCinco, command=lambda: verElemento("5"),
+                            activebackground="#5ECEF4")
+    buttonCinco.grid(pady=5, row=3, column=1)
 
-def labelOperacion():
-    desactivarBoton()
-    if(opcion.get() == 0):
-        lOption.config(text='+')
-    if(opcion.get() == 1):
-        lOption.config(text='-')
-    if(opcion.get() == 2):
-        lOption.config(text='*')
-    if(opcion.get() == 3):
-        lOption.config(text='/')
-    if(opcion.get() == 4):
-        lOption.config(text='AND')
-    if(opcion.get() == 5):
-        lOption.config(text='OR')
-    if(opcion.get() == 6):
-        lOption.config(text='NOT')
+    imgSeis = Image.open('./img/seis.png')
+    imgSeis = imgSeis.resize((50, 50))
+    app.imgSeis = ImageTk.PhotoImage(imgSeis, master=app)
+    buttonSeis = tk.Button(image=app.imgSeis, command=lambda: verElemento("6"),
+                           activebackground="#5ECEF4")
+    buttonSeis.grid(pady=5, row=3, column=2)
 
-def operation(df):
-    if (opcion.get() == 0):
-        add_data(df)
-    if(opcion.get() == 1):
-        subtract_data(df)
-    if(opcion.get() == 2):
-        multiply_data(df)
-    if(opcion.get() == 3):
-        divide_data(df)
-    if(opcion.get() == 4):
-        and_data(df)
-    if(opcion.get() == 5):
-        or_data(df)
-    if(opcion.get() == 6):
-        not_data(df)
+    imgAnd = Image.open('./img/and.png')
+    imgAnd = imgAnd.resize((50, 50))
+    app.imgAnd = ImageTk.PhotoImage(imgAnd, master=app)
+    buttonAnd = tk.Button(image=app.imgAnd, command=lambda: verElemento("&"),
+                          activebackground="#5ECEF4")
+    buttonAnd.grid(pady=5, row=3, column=3)
+    Hovertip(buttonAnd, hover_delay=500, text="Logistic operation AND")
 
-def add_data(df):
-    data1 = opciones1.get()
-    data2 = opciones2.get()
-    result = df[data1] + df[data2]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    imgOr = Image.open('./img/or.png')
+    imgOr = imgOr.resize((50, 50))
+    app.imgOr = ImageTk.PhotoImage(imgOr, master=app)
+    buttonOr = tk.Button(image=app.imgOr, command=lambda: verElemento("|"),
+                         activebackground="#5ECEF4")
+    buttonOr.grid(pady=5, row=3, column=4)
+    Hovertip(buttonOr, hover_delay=500, text="Logistic operation OR")
 
-def subtract_data(df):
-    data1 = opciones1.get()
-    data2 = opciones2.get()
-    result = df[data1] - df[data2]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    imgRes = Image.open('./img/resta.png')
+    imgRes = imgRes.resize((50, 50))
+    app.imgRes = ImageTk.PhotoImage(imgRes, master=app)
+    buttonRes = tk.Button(image=app.imgRes, command=lambda: verElemento("-"),
+                          activebackground="#5ECEF4")
+    buttonRes.grid(pady=5, row=3, column=5)
 
-def multiply_data(df):
-    data1 = opciones1.get()
-    data2 = opciones2.get()
-    result = df[data1] * df[data2]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    imgSiete = Image.open('./img/siete.png')
+    imgSiete = imgSiete.resize((50, 50))
+    app.imgSiete = ImageTk.PhotoImage(imgSiete, master=app)
+    buttonSiete = tk.Button(image=app.imgSiete, command=lambda: verElemento("7"),
+                            activebackground="#5ECEF4")
+    buttonSiete.grid(pady=5, row=4, column=0)
 
-def divide_data(df):
-    data1 = opciones1.get()
-    data2 = opciones2.get()
-    result = df[data1] / df[data2]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    imgOcho = Image.open('./img/ocho.png')
+    imgOcho = imgOcho.resize((50, 50))
+    app.imgOcho = ImageTk.PhotoImage(imgOcho, master=app)
+    buttonOcho = tk.Button(image=app.imgOcho, command=lambda: verElemento("8"),
+                           activebackground="#5ECEF4")
+    buttonOcho.grid(pady=5, row=4, column=1)
+
+    imgNueve = Image.open('./img/nueve.png')
+    imgNueve = imgNueve.resize((50, 50))
+    app.imgNueve = ImageTk.PhotoImage(imgNueve, master=app)
+    buttonNueve = tk.Button(image=app.imgNueve, command=lambda: verElemento("9"),
+                            activebackground="#5ECEF4")
+    buttonNueve.grid(pady=5, row=4, column=2)
+
+    imgNot = Image.open('./img/not.png')
+    imgNot = imgNot.resize((50, 50))
+    app.imgNot = ImageTk.PhotoImage(imgNot, master=app)
+    buttonNot = tk.Button(image=app.imgNot, command=lambda: verElemento("!"),
+                          activebackground="#5ECEF4")
+    buttonNot.grid(pady=5, row=4, column=3)
+    Hovertip(buttonNot, hover_delay=500, text="Logistic operation NOT")
+
+    imgDiv = Image.open('./img/division.png')
+    imgDiv = imgDiv.resize((50, 50))
+    app.imgDiv = ImageTk.PhotoImage(imgDiv, master=app)
+    buttonDiv = tk.Button(image=app.imgDiv, command=lambda: verElemento("/"),
+                          activebackground="#5ECEF4")
+    buttonDiv.grid(pady=5, row=4, column=4)
+
+    imgPor = Image.open('./img/multi.png')
+    imgPor = imgPor.resize((50, 50))
+    app.imgPor = ImageTk.PhotoImage(imgPor, master=app)
+    buttonPor = tk.Button(image=app.imgPor, command=lambda: verElemento("*"),
+                          activebackground="#5ECEF4")
+    buttonPor.grid(pady=5, row=4, column=5)
+
+    imgPunto = Image.open('./img/punto.png')
+    imgPunto = imgPunto.resize((50, 50))
+    app.imgPunto = ImageTk.PhotoImage(imgPunto, master=app)
+    buttonPunto = tk.Button(image=app.imgPunto, command=lambda: verElemento("."),
+                            activebackground="#5ECEF4")
+    buttonPunto.grid(pady=5, row=5, column=0)
+
+    imgCero = Image.open('./img/cero.png')
+    imgCero = imgCero.resize((50, 50))
+    app.imgCero = ImageTk.PhotoImage(imgCero, master=app)
+    buttonCero = tk.Button(image=app.imgCero, command=lambda: verElemento("0"),
+                           activebackground="#5ECEF4")
+    buttonCero.grid(pady=5, row=5, column=1)
+
+    imgDel = Image.open('./img/c.png')
+    imgDel = imgDel.resize((50, 50))
+    app.imgDel = ImageTk.PhotoImage(imgDel, master=app)
+    buttonDel = tk.Button(image=app.imgDel, command=lambda: limpiarCampo(),
+                          activebackground="#5ECEF4")
+    buttonDel.grid(pady=5, row=5, column=2)
+    Hovertip(buttonDel, hover_delay=500, text="Delete operation")
     
-def and_data(df):
-    data1 = opciones1.get()
-    data2 = opciones2.get()
-    result = df[data1] & df[data2]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    # Extraemos los datos
+    listaCampos = df.columns.tolist()
+    campo = ttk.Combobox(app, state="readonly", values=listaCampos)
+    campo.grid(pady=5, row=5, column=3, columnspan=3, sticky="we")
+    Hovertip(campo, hover_delay=500, text="Select a field from the dataset")
+    campo.bind("<<ComboboxSelected>>", verCampo)
 
-def or_data(df):
-    data1 = opciones1.get()
-    data2 = opciones2.get()
-    result = df[data1] | df[data2]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    labelName = ttk.Label(app, text="Name of new field:", font=('Helvetica', 12, 'bold'))
+    labelName.grid(pady=5, row=6, column=0, columnspan=3)
 
-def not_data(df):
-    data1 = opciones1.get()
-    result = ~df[data1]
-    result_name = result_name_entry.get()
-    df[result_name] = result
+    name = tk.Entry(app)
+    name.grid(pady=5, row=6, column=3, columnspan=2, sticky="nswe")
+    Hovertip(name, hover_delay=500, text="Name of new field")
 
-def save_data(df):
-    try:
-        operation(df)
-        file = filedialog.asksaveasfilename(filetypes=[("xlsx files", ".xlsx")], defaultextension="*.xlsx")
-        df.to_excel(file, index=False, header=True)
-    except ValueError:
-        tk.messagebox.showerror("Error", "Unsaved data")
+    imgIgual = Image.open('./img/igual.png')
+    imgIgual = imgIgual.resize((50, 50))
+    app.imgIgual = ImageTk.PhotoImage(imgIgual, master=app)
+    buttonIgual =  tk.Button(image=app.imgIgual, command=lambda:nuevoCampo(df),
+                             activebackground="#5ECEF4")
+    buttonIgual.grid(pady=5, row=6, column=5)
+    Hovertip(name, hover_delay=500, text="Calculate new field")
+
+    verCampo()
+
+def verElemento(elemento):
+    input.configure(state="normal")
+    input.insert(tk.END, elemento)
+    input.configure(state="disabled")
+
+def verCampo(Event=None):
+    selection = campo.get()
+    if selection != "" : verElemento('"'+selection+'"')
+
+def limpiarCampo():
+    input.configure(state="normal")
+    input.delete("1.0","end")
+    input.configure(state="disabled")
+    name.delete(0,"end")
+
+def nuevoCampo(df):
+    n = name.get()
+    inp = input.get("1.0","end")
+    inp = '[' + inp[0:-1] + ']'
+    limpiarCampo()
+    if (n == ""):
+        n = "New_Field"
+
+    if (inp == "[]"):
+        tk.messagebox.showerror("Error", "Enter Operations")
+    else:
+        nd.contruirCampo(inp, df, n)
