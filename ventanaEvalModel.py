@@ -11,6 +11,7 @@ from sklearn.exceptions import DataConversionWarning
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 
 def solicitarDatosPrueba(df, campos, objetivos, model):
 
@@ -143,6 +144,29 @@ def extraerDatos():
         
     except FileNotFoundError:
         tk.messagebox.showerror("Information", f"File was not found in the path {rutaArchivo}")
+
+def encode_one_hot(data):
+    # extract the target field as a NumPy array
+    target_array = data.to_numpy()
+
+    # check if the data is string type
+    if all(isinstance(x, str) for x in target_array):
+        # create a list of unique categories
+        categories = np.unique(target_array)
+
+        # create an instance of the one-hot encoder
+        encoder = OneHotEncoder()
+
+        # fit the encoder to the categories
+        encoder.fit(categories.reshape(-1, 1))
+
+        # transform the data into a one-hot matrix
+        encoded_data = encoder.transform(target_array.reshape(-1, 1)).toarray()
+    else:
+        # if the data is not string type, one-hot encoding is not applied
+        encoded_data = data
+    
+    return encoded_data
         
 
 ############################CODIGO DE REDES NEURONALES#################################################
@@ -153,86 +177,99 @@ def CargarDatosPrediccion(datosEntrada, datosObjetivo, model):
     warnings.filterwarnings(action='ignore', category=FutureWarning)
 
     try:
-        x_train, x_test, y_train, y_test = train_test_split(datosEntrada, datosObjetivo,
-                                                    test_size = 0.10,
-                                                    shuffle = True,
-                                                    random_state = 1)
+        datos_codificados_entrada = encode_one_hot(datosEntrada)
+        datos_codificados_objetivo = encode_one_hot(datosObjetivo)
 
-        # Model
-        generated_model = model
+        try:
+            x_train, x_test, y_train, y_test = train_test_split(datos_codificados_entrada, datos_codificados_objetivo,
+                                                        test_size = 0.10,
+                                                        shuffle = True,
+                                                        random_state = 1)
+
+            # Model
+            generated_model = model
+            
+            generated_model.fit(x_train, y_train)
+        except:
+            # Create a message box with a message and a title 
+            tk.messagebox.showerror("Error", "Verify that the construction of the model is correct. Close the process and try again.")
+            return None
         
-        generated_model.fit(x_train, y_train)
-    except:
         # Create a message box with a message and a title 
-        tk.messagebox.showerror("Error", "Verify that the construction of the model is correct. Close the process and try again.")
-        return None
-    
-    # Create a message box with a message and a title 
-    tk.messagebox.showinfo("Success!", "The model has been created successfully. Close the window to continue.")
+        tk.messagebox.showinfo("Success!", "The model has been created successfully. Close the window to continue.")
 
-    y_pred = generated_model.predict(x_test)
+        y_pred = generated_model.predict(x_test)
 
-    # Hacemos la predicción
-    prediction = generated_model.predict(df2)
+        datos_prediccion = encode_one_hot(df2)
+            
+        # Hacemos la predicción
+        prediction = generated_model.predict(datos_prediccion)
 
-    global listaResultado
-    listaResultado = list(prediction)
+        global listaResultado
+        listaResultado = list(prediction)
 
-    # Funcion para eliminar todo del TreeView
-    limpiarDatos()
+        # Funcion para eliminar todo del TreeView
+        limpiarDatos()
 
-    insertarDatosDePrediccion()
+        insertarDatosDePrediccion()
 
-    # Create a message box with a message and a title 
-    tk.messagebox.showinfo("Displays visual information", "When you close this window, you will be able to see the metrics obtained from the generated model.")
-
-    model_type = generated_model.__class__.__name__
-
-    if 'Classifier' in model_type or 'LogisticRegression' == model_type or 'SVC' == model_type or 'GaussianNB' == model_type:
-        # Hacemos la prueba de efectividad
-        modelAccuracy = accuracy_score(y_test, y_pred)
-        modelPrecision = precision_score(y_test, y_pred)
-        modelRecall = recall_score(y_test, y_pred)
-
-        # Cambiamos las metricas
-        metric_one["text"] = str(f'Model Accuracy: {(modelAccuracy*100):.2f}%')
-        metric_two["text"] = str(f'Model Precision: {(modelPrecision*100):.2f}%')
-        metric_three["text"] = str(f'Model Recall: {(modelRecall*100):.2f}%')
-        
-        #PLOT CONFUSION MATRIX
-        plot_confusion_matrix(generated_model, x_test, y_test)
-        plt.show()
+        # Create a message box with a message and a title 
+        tk.messagebox.showinfo("Displays visual information", "When you close this window, you will be able to see the metrics obtained from the generated model.")
 
         model_type = generated_model.__class__.__name__
 
-        #SHOW REPORT
-        classificationReport = classification_report(y_test, y_pred, output_dict=True)
-        sns.heatmap(pd.DataFrame(classificationReport).T, annot=True)
-    else:
-        # Calculate the evaluation metrics
-        mae = mean_absolute_error(y_test, y_pred)
-        mse = mean_squared_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
+        if 'Classifier' in model_type or 'LogisticRegression' == model_type or 'SVC' == model_type or 'GaussianNB' == model_type:
+            # Hacemos la prueba de efectividad
+            if len(datosObjetivo.values.flatten().tolist()) > 2:
+                average = 'macro'
+            else:
+                average = 'binary'
+            modelAccuracy = accuracy_score(y_test, y_pred)
+            # modelPrecision = precision_score(y_test, y_pred, average=average)
+            # modelRecall = recall_score(y_test, y_pred, zero_division=1, average=average)
 
-        # Actualizamos el valor de las metricas
-        metric_one["text"] = str(f'MAE: {(mae*100):.2f}%')
-        metric_two["text"] = str(f'MSE: {(mse*100):.2f}%')
-        metric_three["text"] = str(f'R^2: {(r2*100):.2f}%')
+            # Cambiamos las metricas
+            metric_one["text"] = str(f'Model Accuracy: {(modelAccuracy*100):.2f}%')
+            # metric_two["text"] = str(f'Model Precision: {(modelPrecision*100):.2f}%')
+            # metric_three["text"] = str(f'Model Recall: {(modelRecall*100):.2f}%')
+            
+            #PLOT CONFUSION MATRIX
+            plot_confusion_matrix(generated_model, x_test, y_test)
+            plt.show()
 
-        # create a dataframe with the values
-        df = pd.DataFrame({'metric': ['MAE', 'MSE', 'R^2'],
-                        'value': [mae, mse, r2]})
+            model_type = generated_model.__class__.__name__
 
-        # plot the data
-        sns.barplot(x='metric', y='value', hue='metric', data=df)
+            #SHOW REPORT
+            classificationReport = classification_report(y_test, y_pred, output_dict=True)
+            sns.heatmap(pd.DataFrame(classificationReport).T, annot=True)
+        else:
+            # Calculate the evaluation metrics
+            mae = mean_absolute_error(y_test, y_pred)
+            mse = mean_squared_error(y_test, y_pred)
+            r2 = r2_score(y_test, y_pred)
 
-        # set the y-axis labels to percentages
-        plt.yticks(np.arange(0, 1.1, 0.1))
-        plt.ylabel('percent')
+            # Actualizamos el valor de las metricas
+            metric_one["text"] = str(f'MAE: {(mae*100):.2f}%')
+            metric_two["text"] = str(f'MSE: {(mse*100):.2f}%')
+            metric_three["text"] = str(f'R^2: {(r2*100):.2f}%')
 
-        # set the y-axis labels to include the % symbol
-        ax = plt.gca()
-        vals = ax.get_yticks()
-        ax.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
-        ax.set_title('Evaluation metrics for linear regression model')
-    plt.show()
+            # create a dataframe with the values
+            df = pd.DataFrame({'metric': ['MAE', 'MSE', 'R^2'],
+                            'value': [mae, mse, r2]})
+
+            # plot the data
+            sns.barplot(x='metric', y='value', hue='metric', data=df)
+
+            # set the y-axis labels to percentages
+            plt.yticks(np.arange(0, 1.1, 0.1))
+            plt.ylabel('percent')
+
+            # set the y-axis labels to include the % symbol
+            ax = plt.gca()
+            vals = ax.get_yticks()
+            ax.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+            ax.set_title('Evaluation metrics for linear regression model')
+        plt.show()
+    except Exception as e:
+        # We show the message
+        tk.messagebox.showerror("Error", str(e))

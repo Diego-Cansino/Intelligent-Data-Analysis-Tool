@@ -555,69 +555,6 @@ def cargarDatosExcel():
 def limpiarDatos():
     tv1.delete(*tv1.get_children())
 
-def limpiarDatosForwardFill():
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    limpiarDatos()
-    global df  # QUIZA ESTO ESTA MAL
-    df = df.fillna(method="ffill")
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
-def limpiarDatosBackwardFill():
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    limpiarDatos()
-    global df
-    df = df.fillna(method="backfill")
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
-def limpiarDatosColumnaVacia():
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    limpiarDatos()  # por si no tiene nada la columna
-    global df
-    df = df.dropna(axis=1)
-    insertarDatosTreeView()
-    verificarDatosNulos()
-    
-def rellenarDatosMedia():
-    global df
-    limpiarDatos()
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    meanValues = df.mean()
-    df = df.fillna(meanValues)
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
-def rellenarDatosMediana():
-    global df
-    limpiarDatos()
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    medianValues = df.median()
-    df = df.fillna(medianValues)
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
-def rellenarDatosModa():
-    global df
-    limpiarDatos()
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    values = df.mode()
-    modeValues = values.head(1).squeeze()
-    df = df.fillna(modeValues)
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
-def rellenarDatosRango():
-    global df
-    limpiarDatos()
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
-    maxValues = df.max()
-    minValues = df.min()
-    values = maxValues - minValues
-    df = df.fillna(values)
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
 def limpiarDatosAllMethods():
     """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
     limpiarDatos()
@@ -625,15 +562,6 @@ def limpiarDatosAllMethods():
     df = df.fillna(method="ffill")
     df = df.fillna(method="backfill")
     df = df.dropna(axis=1)
-    insertarDatosTreeView()
-    verificarDatosNulos()
-
-def normalizarDatos():
-    """Normaliza los datos de manera global en el DataFrame"""
-    limpiarDatos()
-    global df
-    normalizeData = ( df - df.min() ) / ( df.max() - df.min() )
-    df = normalizeData
     insertarDatosTreeView()
     verificarDatosNulos()
 
