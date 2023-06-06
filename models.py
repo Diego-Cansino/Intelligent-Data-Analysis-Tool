@@ -18,7 +18,7 @@ def getLogisticRegression():
     return LogisticRegression(max_iter=1000, random_state=1, solver='liblinear', penalty='l1')
 
 def getANN():
-    return MLPClassifier(hidden_layer_sizes=(10,15), activation='logistic', solver='adam', max_iter=500, random_state=1)
+    return MLPClassifier(hidden_layer_sizes=(10, 5), max_iter=10000, random_state=42)
 
 def getSVMClassifier():
     return SVC(kernel='linear')

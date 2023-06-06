@@ -18,7 +18,7 @@ def realizarLimpieza(df, columns, cleaningMethod):
     vp.dataCleaning(df)
 
 def limpiarDatosForwardFill(df, columns):
-    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""  # QUIZA ESTO ESTA MAL
+    """Si el archivo seleccionado es valido, este se mostrará en la GUI"""
     df.iloc[:, columns] = df.iloc[:, columns].fillna(method="ffill")
 
 def limpiarDatosBackwardFill(df, columns):
